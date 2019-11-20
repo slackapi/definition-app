@@ -1,0 +1,28 @@
+{
+  "name": "definition-app",
+  "version": "1.0.0",
+  "description": "An app for storing and accessing company specific phrases",
+  "main": "build/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node build/app.js",
+    "build": "tsc",
+    "postinstall": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slackapi/definition-app.git"
+  },
+  "author": "Colm Doyle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/slackapi/definition-app/issues"
+  },
+  "homepage": "https://github.com/slackapi/definition-app#readme",
+  "dependencies": {
+    "@slack/bolt": "^1.4.1",
+    "dotenv": "^8.2.0",
+    "hbs": "^4.0.6",
+    "typescript": "^3.7.2"
+  }
+}

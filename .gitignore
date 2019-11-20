@@ -1,0 +1,13 @@
+# dependencies
+node_modules/
+
+# local configuration
+.env
+
+# TypeScript build output
+build/
+
+# VSCode workspace settings
+.vscode/
+
+.DS_Store

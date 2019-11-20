@@ -1,2 +1,3 @@
-# sample-code-template
-This is a template used for the creation of new sample code
+# Definition App
+
+An app for storing and accessing company specific phrases
