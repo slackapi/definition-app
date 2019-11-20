@@ -7,7 +7,7 @@
     "test": "mocha -r ts-node/register src/**/*.spec.ts",
     "start": "node build/app.js",
     "build": "tsc",
-    "postinstall": "npm test; npm run build"
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
