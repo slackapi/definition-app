@@ -6,7 +6,7 @@ export function context(text: string) : ContextBlock {
         elements: [
             {
                 type: "mrkdwn",
-                text: text
+                text
             }
         ]
     }
@@ -17,7 +17,7 @@ export function section(text: string) : SectionBlock {
         type: "section",
         text: {
             type: "mrkdwn",
-            text: text
+            text
         }
     }
 }
@@ -26,10 +26,23 @@ export function option(text: string, value: string) : Option {
     return {
         text: {
             type: "plain_text",
-            text: text,
+            text,
             emoji: true
         },
-        value: value
+        value
     }
 }
 
+export function sectionWithOverflow(text: string, options: Option[]) : SectionBlock {
+    return {
+        type: "section",
+        text: {
+            type: "mrkdwn",
+            text,
+        },
+        accessory: {
+            type: "overflow",
+            options
+        }
+    }
+}
