@@ -4,7 +4,7 @@
   "description": "An app for storing and accessing company specific phrases",
   "main": "build/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha -r ts-node/register src/**/*.spec.ts",
     "start": "node build/app.js",
     "build": "tsc",
     "postinstall": "npm run build"
@@ -22,7 +22,13 @@
   "dependencies": {
     "@slack/bolt": "^1.4.1",
     "dotenv": "^8.2.0",
-    "hbs": "^4.0.6",
     "typescript": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.5",
+    "@types/mocha": "^5.2.7",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "ts-node": "^8.5.2"
   }
 }
