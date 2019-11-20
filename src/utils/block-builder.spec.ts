@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { context, section } from './block-builder'
+import { context, section, option } from './block-builder'
 
 describe('Block builder', () => {
     describe('context', () => {
@@ -29,6 +29,22 @@ describe('Block builder', () => {
                     type: "mrkdwn",
                     text: test_text
                 }
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+    })
+    describe('option', () => {
+        it('returns a formatted option', () => {
+            const test_text = 'test';
+            const test_value = 'test-value';
+            const actual_value = option(test_text, test_value);
+            const expected_value = {
+                text: {
+                    type: "plain_text",
+                    text: test_text,
+                    emoji: true
+                },
+                value: test_value
             };
             expect(actual_value).to.eql(expected_value);
         })
