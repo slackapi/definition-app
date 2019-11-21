@@ -14,11 +14,7 @@ const app = new App({
 
 app.command(`/${globalActions.define}`, ({command, ack, respond}) => {
     ack();
-    if (command.text.length > 0) {
-        respond(definition(command.text));
-    } else {
-        respond({text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``});
-    }
+    respond(definition(command.text));
 });
 
 (async () => {

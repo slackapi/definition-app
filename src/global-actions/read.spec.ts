@@ -2,6 +2,7 @@ import 'mocha'
 import { expect } from 'chai'
 
 import { definition } from './read'
+import { globalActions } from '../config/actions'
 
 describe('Read actions', () => {
     describe('definition', () => {
@@ -24,6 +25,106 @@ describe('Read actions', () => {
                             {
                                 type: "mrkdwn",
                                 text: `Last updated by Jane Bloggs`
+                            }
+                        ]
+                    }
+                ]
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+        it('returns a prompt to provide a term when no string is provided', () => {
+            const test_text = '';
+            const actual_value = definition(test_text);
+            const expected_value = {
+                text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
+                blocks: [
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: ':warning: You didn\'t specify a term to search for'
+                        }
+                    },
+                    {
+                        type: 'divider'
+                    },
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: `You can use \`/${globalActions.define}\` to search for the definition of terms used by your company. What would you like to do?`
+                        }
+                    },
+                    {
+                        type: 'actions',
+                        elements: [
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Add a term',
+                                    emoji: true
+                                },
+                                value: 'add_a_term'
+                            },
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Search for a term',
+                                    emoji: true
+                                },
+                                value: 'search_for_term'
+                            }
+                        ]
+                    }
+                ]
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+        it('returns a prompt to provide a term when just spaces are provided', () => {
+            const test_text = '          ';
+            const actual_value = definition(test_text);
+            const expected_value = {
+                text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
+                blocks: [
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: ':warning: You didn\'t specify a term to search for'
+                        }
+                    },
+                    {
+                        type: 'divider'
+                    },
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: `You can use \`/${globalActions.define}\` to search for the definition of terms used by your company. What would you like to do?`
+                        }
+                    },
+                    {
+                        type: 'actions',
+                        elements: [
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Add a term',
+                                    emoji: true
+                                },
+                                value: 'add_a_term'
+                            },
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Search for a term',
+                                    emoji: true
+                                },
+                                value: 'search_for_term'
                             }
                         ]
                     }

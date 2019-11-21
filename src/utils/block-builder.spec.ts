@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { context, section, option, sectionWithOverflow } from './block-builder'
+import { context, section, option, sectionWithOverflow, divider, actionButton, actions } from './block-builder'
 
 describe('Block builder', () => {
     describe('context', () => {
@@ -71,6 +71,55 @@ describe('Block builder', () => {
                     emoji: true
                 },
                 value: test_value
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+    })
+    describe('divider', () => {
+        it('returns a divider block', () => {
+            const actual_value = divider();
+            const expected_value = {
+                type: 'divider'
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+    })
+    describe('actionButton', () => {
+        it('returns a button action block', () => {
+            const test_text = 'Test';
+            const test_value = 'TestValue';
+            const actual_value = actionButton(test_text, test_value);
+            const expected_value = {
+                type: 'button',
+                text: {
+                    type: 'plain_text',
+                    text: test_text,
+                    emoji: true
+                },
+                value: test_value
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+    })
+    describe('actions', () => {
+        it('returns a actions block', () => {
+            const test_text = 'Test';
+            const test_value = 'TestValue';
+            const test_button = actionButton(test_text, test_value);
+            const actual_value = actions([test_button])
+            const expected_value = {
+                type: 'actions',
+                elements: [
+                    {
+                        type: 'button',
+                        text: {
+                            type: 'plain_text',
+                            text: test_text,
+                            emoji: true
+                        },
+                        value: test_value
+                    }
+                ]
             };
             expect(actual_value).to.eql(expected_value);
         })
