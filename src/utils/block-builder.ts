@@ -1,4 +1,4 @@
-import { ContextBlock, SectionBlock } from '@slack/types'
+import { ContextBlock, SectionBlock, Option } from '@slack/types'
 
 export function context(text: string) : ContextBlock {
     return {
@@ -6,7 +6,7 @@ export function context(text: string) : ContextBlock {
         elements: [
             {
                 type: "mrkdwn",
-                text: text
+                text
             }
         ]
     }
@@ -17,7 +17,32 @@ export function section(text: string) : SectionBlock {
         type: "section",
         text: {
             type: "mrkdwn",
-            text: text
+            text
+        }
+    }
+}
+
+export function option(text: string, value: string) : Option {
+    return {
+        text: {
+            type: "plain_text",
+            text,
+            emoji: true
+        },
+        value
+    }
+}
+
+export function sectionWithOverflow(text: string, options: Option[]) : SectionBlock {
+    return {
+        type: "section",
+        text: {
+            type: "mrkdwn",
+            text,
+        },
+        accessory: {
+            type: "overflow",
+            options
         }
     }
 }
