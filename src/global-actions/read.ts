@@ -1,6 +1,6 @@
 import {context, section, divider, actions, actionButton} from '../utils/block-builder'
 import { SayArguments } from '@slack/bolt'
-import { globalActions } from '../config/actions'
+import { globalActions, blockActions } from '../config/actions'
 
 export function definition(term: string) : SayArguments {
   term = term.trim();
@@ -13,9 +13,10 @@ export function definition(term: string) : SayArguments {
         divider(),
         section(`You can use \`/${globalActions.define}\` to search for the definition of terms used by your company. What would you like to do?`),
         actions([
-          actionButton('Add a term', 'add_a_term'),
-          actionButton('Search for a term', 'search_for_term')
-        ])
+          actionButton('Add a term', blockActions.add_a_term),
+          actionButton('Search for a term', blockActions.search_for_term)
+        ],
+        blockActions.search_or_add)
       ]
     }
   }

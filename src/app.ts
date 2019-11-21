@@ -3,7 +3,7 @@ dotenv.config();
 
 import { App } from '@slack/bolt'
 
-import { globalActions } from './config/actions'
+import { globalActions, blockActions } from './config/actions'
 
 import { definition } from './global-actions/read'
 
@@ -15,6 +15,14 @@ const app = new App({
 app.command(`/${globalActions.define}`, ({command, ack, respond}) => {
     ack();
     respond(definition(command.text));
+});
+
+app.action({action_id: blockActions.add_a_term}, ({ack}) => {
+    ack();
+});
+
+app.action({action_id: blockActions.search_for_term}, ({ack}) => {
+    ack();
 });
 
 (async () => {

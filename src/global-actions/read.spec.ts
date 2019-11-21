@@ -57,6 +57,7 @@ describe('Read actions', () => {
                     },
                     {
                         type: 'actions',
+                        block_id: 'search_or_add',
                         elements: [
                             {
                                 type: 'button',
@@ -65,7 +66,7 @@ describe('Read actions', () => {
                                     text: 'Add a term',
                                     emoji: true
                                 },
-                                value: 'add_a_term'
+                                action_id: 'add_a_term'
                             },
                             {
                                 type: 'button',
@@ -74,7 +75,7 @@ describe('Read actions', () => {
                                     text: 'Search for a term',
                                     emoji: true
                                 },
-                                value: 'search_for_term'
+                                action_id: 'search_for_term'
                             }
                         ]
                     }
@@ -107,6 +108,7 @@ describe('Read actions', () => {
                     },
                     {
                         type: 'actions',
+                        block_id: 'search_or_add',
                         elements: [
                             {
                                 type: 'button',
@@ -115,7 +117,7 @@ describe('Read actions', () => {
                                     text: 'Add a term',
                                     emoji: true
                                 },
-                                value: 'add_a_term'
+                                action_id: 'add_a_term'
                             },
                             {
                                 type: 'button',
@@ -124,7 +126,7 @@ describe('Read actions', () => {
                                     text: 'Search for a term',
                                     emoji: true
                                 },
-                                value: 'search_for_term'
+                                action_id: 'search_for_term'
                             }
                         ]
                     }

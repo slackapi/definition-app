@@ -29,7 +29,7 @@ export function divider(): DividerBlock {
     }
 }
 
-export function actionButton(text: string, value: string): Button {
+export function actionButton(text: string, action_id: string): Button {
     return {
         type: 'button',
         text: {
@@ -37,13 +37,14 @@ export function actionButton(text: string, value: string): Button {
             text,
             emoji: true
         },
-        value
+        action_id
     }
 }
 
-export function actions(actions: Action[]): ActionsBlock {
+export function actions(actions: Action[], block_id: string): ActionsBlock {
     return {
         type: 'actions',
+        block_id,
         elements: actions
     }
 }

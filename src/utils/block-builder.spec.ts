@@ -96,7 +96,7 @@ describe('Block builder', () => {
                     text: test_text,
                     emoji: true
                 },
-                value: test_value
+                action_id: test_value
             };
             expect(actual_value).to.eql(expected_value);
         })
@@ -105,10 +105,12 @@ describe('Block builder', () => {
         it('returns a actions block', () => {
             const test_text = 'Test';
             const test_value = 'TestValue';
+            const test_block_id = 'TestBlockID';
             const test_button = actionButton(test_text, test_value);
-            const actual_value = actions([test_button])
+            const actual_value = actions([test_button], test_block_id)
             const expected_value = {
                 type: 'actions',
+                block_id: test_block_id,
                 elements: [
                     {
                         type: 'button',
@@ -117,7 +119,7 @@ describe('Block builder', () => {
                             text: test_text,
                             emoji: true
                         },
-                        value: test_value
+                        action_id: test_value
                     }
                 ]
             };
