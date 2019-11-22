@@ -16,7 +16,7 @@ describe('Read actions', () => {
                         type: "section",
                         text: {
                             type: "mrkdwn",
-                            text: `*${test_text}*\n_There's so much to say about ${test_text}, isn't there?._`
+                            text: `${test_text}\nThis is a placeholder definition`
                         }
                     },
                     {
@@ -24,7 +24,7 @@ describe('Read actions', () => {
                         elements: [
                             {
                                 type: "mrkdwn",
-                                text: `Last updated by Jane Bloggs`
+                                text: `Last updated by <@U9UFK54EA> on <!date^1574421631^{date_pretty}|1574421631>`
                             }
                         ]
                     }
