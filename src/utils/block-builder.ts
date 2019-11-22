@@ -1,4 +1,4 @@
-import { ContextBlock, SectionBlock, Option, DividerBlock, Action, ActionsBlock, Button } from '@slack/types'
+import { ContextBlock, SectionBlock, Option, DividerBlock, Action, ActionsBlock, Button, InputBlock } from '@slack/types'
 
 export function context(text: string): ContextBlock {
     return {
@@ -69,6 +69,27 @@ export function sectionWithOverflow(text: string, options: Option[]): SectionBlo
         accessory: {
             type: "overflow",
             options
+        }
+    }
+}
+
+export function input(title: string, action_id: string, placeholder: string = ' ', multiline: boolean = false):  InputBlock {
+    return {
+        type: 'input',
+        block_id: action_id,
+        element: {
+            type: 'plain_text_input',
+            multiline,
+            action_id,
+            placeholder : {
+                type: 'plain_text',
+                text: placeholder
+            }
+        },
+        label: {
+            type: 'plain_text',
+            text: title,
+            emoji: true
         }
     }
 }

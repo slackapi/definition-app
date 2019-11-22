@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { context, section, option, sectionWithOverflow, divider, actionButton, actions } from './block-builder'
+import { context, section, option, sectionWithOverflow, divider, actionButton, actions, input } from './block-builder'
 
 describe('Block builder', () => {
     describe('context', () => {
@@ -102,7 +102,7 @@ describe('Block builder', () => {
         })
     })
     describe('actions', () => {
-        it('returns a actions block', () => {
+        it('returns an actions block', () => {
             const test_text = 'Test';
             const test_value = 'TestValue';
             const test_block_id = 'TestBlockID';
@@ -122,6 +122,58 @@ describe('Block builder', () => {
                         action_id: test_value
                     }
                 ]
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+    })
+    describe('input', () => {
+        it('returns a single line input block', () => {
+            const test_title = 'Test';
+            const test_placeholder = 'TestValue';
+            const test_block_id = 'TestBlockID';
+            const actual_value = input(test_title, test_block_id, test_placeholder)
+            const expected_value = {
+                type: 'input',
+                block_id: test_block_id,
+                element: {
+                    type: 'plain_text_input',
+                    multiline: false,
+                    action_id: test_block_id,
+                    placeholder : {
+                        type: 'plain_text',
+                        text: test_placeholder
+                    }
+                },
+                label: {
+                    type: 'plain_text',
+                    text: test_title,
+                    emoji: true
+                }
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+        it('returns a multiline line input block', () => {
+            const test_title = 'Test';
+            const test_placeholder = 'TestValue';
+            const test_block_id = 'TestBlockID';
+            const actual_value = input(test_title, test_block_id, test_placeholder, true)
+            const expected_value = {
+                type: 'input',
+                block_id: test_block_id,
+                element: {
+                    type: 'plain_text_input',
+                    multiline: true,
+                    action_id: test_block_id,
+                    placeholder : {
+                        type: 'plain_text',
+                        text: test_placeholder
+                    }
+                },
+                label: {
+                    type: 'plain_text',
+                    text: test_title,
+                    emoji: true
+                }
             };
             expect(actual_value).to.eql(expected_value);
         })
