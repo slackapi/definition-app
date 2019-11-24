@@ -7,16 +7,16 @@ import { globalActions } from '../config/actions'
 describe('Read actions', () => {
     describe('definition', () => {
         it('returns a definition of the requested term, formatted as a Slack message', () => {
-            const test_text = 'test';
-            const actual_value = definition(test_text);
-            const expected_value = {
-                text: `${test_text}`,
+            const testText = 'test';
+            const actualValue = definition(testText);
+            const expectedValue = {
+                text: `${testText}`,
                 blocks: [
                     {
                         type: "section",
                         text: {
                             type: "mrkdwn",
-                            text: `${test_text}\nThis is a placeholder definition`
+                            text: `${testText}\nThis is a placeholder definition`
                         }
                     },
                     {
@@ -30,12 +30,12 @@ describe('Read actions', () => {
                     }
                 ]
             };
-            expect(actual_value).to.eql(expected_value);
+            expect(actualValue).to.eql(expectedValue);
         })
         it('returns a prompt to provide a term when no string is provided', () => {
-            const test_text = '';
-            const actual_value = definition(test_text);
-            const expected_value = {
+            const testText = '';
+            const actualValue = definition(testText);
+            const expectedValue = {
                 text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
                 blocks: [
                     {
@@ -57,7 +57,8 @@ describe('Read actions', () => {
                     },
                     {
                         type: 'actions',
-                        block_id: 'search_or_add',
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        block_id: 'searchOrAdd',
                         elements: [
                             {
                                 type: 'button',
@@ -66,7 +67,8 @@ describe('Read actions', () => {
                                     text: 'Add a term',
                                     emoji: true
                                 },
-                                action_id: 'add_a_term'
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'addATerm'
                             },
                             {
                                 type: 'button',
@@ -75,18 +77,19 @@ describe('Read actions', () => {
                                     text: 'Search for a term',
                                     emoji: true
                                 },
-                                action_id: 'search_for_term'
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'searchForTerm'
                             }
                         ]
                     }
                 ]
             };
-            expect(actual_value).to.eql(expected_value);
+            expect(actualValue).to.eql(expectedValue);
         })
         it('returns a prompt to provide a term when just spaces are provided', () => {
-            const test_text = '          ';
-            const actual_value = definition(test_text);
-            const expected_value = {
+            const testText = '          ';
+            const actualValue = definition(testText);
+            const expectedValue = {
                 text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
                 blocks: [
                     {
@@ -108,7 +111,8 @@ describe('Read actions', () => {
                     },
                     {
                         type: 'actions',
-                        block_id: 'search_or_add',
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        block_id: 'searchOrAdd',
                         elements: [
                             {
                                 type: 'button',
@@ -117,7 +121,8 @@ describe('Read actions', () => {
                                     text: 'Add a term',
                                     emoji: true
                                 },
-                                action_id: 'add_a_term'
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'addATerm'
                             },
                             {
                                 type: 'button',
@@ -126,13 +131,14 @@ describe('Read actions', () => {
                                     text: 'Search for a term',
                                     emoji: true
                                 },
-                                action_id: 'search_for_term'
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'searchForTerm'
                             }
                         ]
                     }
                 ]
             };
-            expect(actual_value).to.eql(expected_value);
+            expect(actualValue).to.eql(expectedValue);
         })
     })
 });

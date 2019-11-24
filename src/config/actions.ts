@@ -3,7 +3,7 @@ export const globalActions = {
 };
 
 export const blockActions = {
-    add_a_term: 'add_a_term',
-    search_for_term: 'search_for_term',
-    search_or_add: 'search_or_add'
+    addATerm: 'addATerm',
+    searchForTerm: 'searchForTerm',
+    searchOrAdd: 'searchOrAdd'
 };

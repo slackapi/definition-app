@@ -24,20 +24,20 @@ export function emptyQueryView(): MessagePayload {
             divider(),
             section(`You can use \`/${globalActions.define}\` to search for the definition of terms used by your company. What would you like to do?`),
             actions([
-                actionButton('Add a term', blockActions.add_a_term),
-                actionButton('Search for a term', blockActions.search_for_term)
+                actionButton('Add a term', blockActions.addATerm),
+                actionButton('Search for a term', blockActions.searchForTerm)
             ],
-                blockActions.search_or_add)
+                blockActions.searchOrAdd)
         ]
     }
 }
 
-export function definitionResultView(term: string, definition: string, author_id: string, last_update_ts: number): MessagePayload {
+export function definitionResultView(term: string, definition: string, authorID: string, lastUpdateTS: number): MessagePayload {
     return {
         text: `${term}`,
         blocks: [
           section(`${term}\n${definition}`),
-          context(`Last updated by <@${author_id}> on <!date^${last_update_ts}^{date_pretty}|${last_update_ts}>`)
+          context(`Last updated by <@${authorID}> on <!date^${lastUpdateTS}^{date_pretty}|${lastUpdateTS}>`)
         ]
       }
 }
@@ -50,7 +50,8 @@ export function addTermModalView(): ViewsPayload {
             text: 'Submit',
             emoji: true
         },
-        callback_id: modalCallbacks.create_modal,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.createModal,
         title: {
             text: "Add a new term",
             type: "plain_text"

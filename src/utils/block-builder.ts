@@ -29,7 +29,7 @@ export function divider(): DividerBlock {
     }
 }
 
-export function actionButton(text: string, action_id: string): Button {
+export function actionButton(text: string, actionID: string): Button {
     return {
         type: 'button',
         text: {
@@ -37,14 +37,16 @@ export function actionButton(text: string, action_id: string): Button {
             text,
             emoji: true
         },
-        action_id
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        action_id: actionID
     }
 }
 
-export function actions(actions: Action[], block_id: string): ActionsBlock {
+export function actions(actions: Action[], blockID: string): ActionsBlock {
     return {
         type: 'actions',
-        block_id,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        block_id: blockID,
         elements: actions
     }
 }
@@ -73,14 +75,16 @@ export function sectionWithOverflow(text: string, options: Option[]): SectionBlo
     }
 }
 
-export function input(title: string, action_id: string, placeholder: string = ' ', multiline: boolean = false):  InputBlock {
+export function input(title: string, actionID: string, placeholder = ' ', multiline = false):  InputBlock {
     return {
         type: 'input',
-        block_id: action_id,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        block_id: actionID,
         element: {
             type: 'plain_text_input',
             multiline,
-            action_id,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            action_id: actionID,
             placeholder : {
                 type: 'plain_text',
                 text: placeholder

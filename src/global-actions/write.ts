@@ -1,10 +1,11 @@
 import { App } from "@slack/bolt";
 import { addTermModalView } from '../slack-views/views'
 
-export function displayModal(app: App, bot_token: string, trigger_id: string) : void {
+export function displayModal(app: App, botToken: string, triggerID: string) : void {
     app.client.views.open({
-        token: bot_token,
-        trigger_id,
+        token: botToken,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        trigger_id: triggerID,
         view: addTermModalView()
     }).then().catch(error => console.log(JSON.stringify(error, null, 2)));
 }
