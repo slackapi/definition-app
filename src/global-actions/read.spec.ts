@@ -2,6 +2,7 @@ import 'mocha'
 import { expect } from 'chai'
 
 import { definition } from './read'
+import { globalActions } from '../config/actions'
 
 describe('Read actions', () => {
     describe('definition', () => {
@@ -15,7 +16,7 @@ describe('Read actions', () => {
                         type: "section",
                         text: {
                             type: "mrkdwn",
-                            text: `*${test_text}*\n_There's so much to say about ${test_text}, isn't there?._`
+                            text: `${test_text}\nThis is a placeholder definition`
                         }
                     },
                     {
@@ -23,7 +24,109 @@ describe('Read actions', () => {
                         elements: [
                             {
                                 type: "mrkdwn",
-                                text: `Last updated by Jane Bloggs`
+                                text: `Last updated by <@U9UFK54EA> on <!date^1574421631^{date_pretty}|1574421631>`
+                            }
+                        ]
+                    }
+                ]
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+        it('returns a prompt to provide a term when no string is provided', () => {
+            const test_text = '';
+            const actual_value = definition(test_text);
+            const expected_value = {
+                text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
+                blocks: [
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: ':warning: You didn\'t specify a term to search for'
+                        }
+                    },
+                    {
+                        type: 'divider'
+                    },
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: `You can use \`/${globalActions.define}\` to search for the definition of terms used by your company. What would you like to do?`
+                        }
+                    },
+                    {
+                        type: 'actions',
+                        block_id: 'search_or_add',
+                        elements: [
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Add a term',
+                                    emoji: true
+                                },
+                                action_id: 'add_a_term'
+                            },
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Search for a term',
+                                    emoji: true
+                                },
+                                action_id: 'search_for_term'
+                            }
+                        ]
+                    }
+                ]
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+        it('returns a prompt to provide a term when just spaces are provided', () => {
+            const test_text = '          ';
+            const actual_value = definition(test_text);
+            const expected_value = {
+                text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
+                blocks: [
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: ':warning: You didn\'t specify a term to search for'
+                        }
+                    },
+                    {
+                        type: 'divider'
+                    },
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: `You can use \`/${globalActions.define}\` to search for the definition of terms used by your company. What would you like to do?`
+                        }
+                    },
+                    {
+                        type: 'actions',
+                        block_id: 'search_or_add',
+                        elements: [
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Add a term',
+                                    emoji: true
+                                },
+                                action_id: 'add_a_term'
+                            },
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Search for a term',
+                                    emoji: true
+                                },
+                                action_id: 'search_for_term'
                             }
                         ]
                     }

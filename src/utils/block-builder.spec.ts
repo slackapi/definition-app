@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { context, section, option, sectionWithOverflow } from './block-builder'
+import { context, section, option, sectionWithOverflow, divider, actionButton, actions, input } from './block-builder'
 
 describe('Block builder', () => {
     describe('context', () => {
@@ -71,6 +71,109 @@ describe('Block builder', () => {
                     emoji: true
                 },
                 value: test_value
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+    })
+    describe('divider', () => {
+        it('returns a divider block', () => {
+            const actual_value = divider();
+            const expected_value = {
+                type: 'divider'
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+    })
+    describe('actionButton', () => {
+        it('returns a button action block', () => {
+            const test_text = 'Test';
+            const test_value = 'TestValue';
+            const actual_value = actionButton(test_text, test_value);
+            const expected_value = {
+                type: 'button',
+                text: {
+                    type: 'plain_text',
+                    text: test_text,
+                    emoji: true
+                },
+                action_id: test_value
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+    })
+    describe('actions', () => {
+        it('returns an actions block', () => {
+            const test_text = 'Test';
+            const test_value = 'TestValue';
+            const test_block_id = 'TestBlockID';
+            const test_button = actionButton(test_text, test_value);
+            const actual_value = actions([test_button], test_block_id)
+            const expected_value = {
+                type: 'actions',
+                block_id: test_block_id,
+                elements: [
+                    {
+                        type: 'button',
+                        text: {
+                            type: 'plain_text',
+                            text: test_text,
+                            emoji: true
+                        },
+                        action_id: test_value
+                    }
+                ]
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+    })
+    describe('input', () => {
+        it('returns a single line input block', () => {
+            const test_title = 'Test';
+            const test_placeholder = 'TestValue';
+            const test_block_id = 'TestBlockID';
+            const actual_value = input(test_title, test_block_id, test_placeholder)
+            const expected_value = {
+                type: 'input',
+                block_id: test_block_id,
+                element: {
+                    type: 'plain_text_input',
+                    multiline: false,
+                    action_id: test_block_id,
+                    placeholder : {
+                        type: 'plain_text',
+                        text: test_placeholder
+                    }
+                },
+                label: {
+                    type: 'plain_text',
+                    text: test_title,
+                    emoji: true
+                }
+            };
+            expect(actual_value).to.eql(expected_value);
+        })
+        it('returns a multiline line input block', () => {
+            const test_title = 'Test';
+            const test_placeholder = 'TestValue';
+            const test_block_id = 'TestBlockID';
+            const actual_value = input(test_title, test_block_id, test_placeholder, true)
+            const expected_value = {
+                type: 'input',
+                block_id: test_block_id,
+                element: {
+                    type: 'plain_text_input',
+                    multiline: true,
+                    action_id: test_block_id,
+                    placeholder : {
+                        type: 'plain_text',
+                        text: test_placeholder
+                    }
+                },
+                label: {
+                    type: 'plain_text',
+                    text: test_title,
+                    emoji: true
+                }
             };
             expect(actual_value).to.eql(expected_value);
         })
