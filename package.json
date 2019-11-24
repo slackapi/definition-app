@@ -5,6 +5,7 @@
   "main": "build/app.js",
   "scripts": {
     "test": "mocha -r ts-node/register src/**/*.spec.ts",
+    "lint": "eslint src/**/*.ts",
     "start": "node build/app.js",
     "build": "tsc",
     "postinstall": "npm run build"
@@ -27,8 +28,13 @@
   "devDependencies": {
     "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
     "chai": "^4.2.0",
+    "eslint": "^6.7.0",
+    "eslint-config-prettier": "^6.7.0",
     "mocha": "^6.2.2",
+    "prettier": "^1.19.1",
     "ts-node": "^8.5.2"
   }
 }

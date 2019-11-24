@@ -8,8 +8,8 @@ describe('views', () => {
     describe('Messages', () => {
         describe('emptyQueryView', () => {
             it('returns a formatted message block', () => {
-                const actual_value = emptyQueryView();
-                const expected_value = {
+                const actualValue = emptyQueryView();
+                const expectedValue = {
                     text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
                     blocks: [
                         {
@@ -31,7 +31,8 @@ describe('views', () => {
                         },
                         {
                             type: 'actions',
-                            block_id: 'search_or_add',
+                            // eslint-disable-next-line @typescript-eslint/camelcase
+                            block_id: 'searchOrAdd',
                             elements: [
                                 {
                                     type: 'button',
@@ -40,7 +41,8 @@ describe('views', () => {
                                         text: 'Add a term',
                                         emoji: true
                                     },
-                                    action_id: 'add_a_term'
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
+                                    action_id: 'addATerm'
                                 },
                                 {
                                     type: 'button',
@@ -49,35 +51,36 @@ describe('views', () => {
                                         text: 'Search for a term',
                                         emoji: true
                                     },
-                                    action_id: 'search_for_term'
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
+                                    action_id: 'searchForTerm'
                                 }
                             ]
                         }
                     ]
                 }
-                expect(actual_value).to.eql(expected_value);
+                expect(actualValue).to.eql(expectedValue);
             })
         })
         describe('definitionResultView', () => {
             it('returns a formatted message block', () => {
-                const test_term = 'OKR';
-                const test_definition = 'OKRs are objective and key results';
-                const test_author_id = 'U1234567';
-                const test_timestamp = 12345678;
-                const actual_value = definitionResultView(
-                    test_term,
-                    test_definition,
-                    test_author_id,
-                    test_timestamp
+                const testTerm = 'OKR';
+                const testDefinition = 'OKRs are objective and key results';
+                const testAuthorID = 'U1234567';
+                const testTimestamp = 12345678;
+                const actualValue = definitionResultView(
+                    testTerm,
+                    testDefinition,
+                    testAuthorID,
+                    testTimestamp
                 );
-                const expected_value = {
-                    text: `${test_term}`,
+                const expectedValue = {
+                    text: `${testTerm}`,
                     blocks: [
                         {
                             type: "section",
                             text: {
                                 type: "mrkdwn",
-                                text: `${test_term}\n${test_definition}`
+                                text: `${testTerm}\n${testDefinition}`
                             }
                         },
                         {
@@ -85,28 +88,29 @@ describe('views', () => {
                             elements: [
                                 {
                                     type: "mrkdwn",
-                                    text: `Last updated by <@${test_author_id}> on <!date^${test_timestamp}^{date_pretty}|${test_timestamp}>`
+                                    text: `Last updated by <@${testAuthorID}> on <!date^${testTimestamp}^{date_pretty}|${testTimestamp}>`
                                 }
                             ]
                         }
                     ]
                 };
-                expect(actual_value).to.eql(expected_value);
+                expect(actualValue).to.eql(expectedValue);
             })
         })
     })
     describe('Modals', () => {
         describe('addTermModalView', () => {
             it('returns a formatted modal', () => {
-                const actual_value = addTermModalView();
-                const expected_value = {
+                const actualValue = addTermModalView();
+                const expectedValue = {
                     type: "modal",
                     submit: {
                         type: 'plain_text',
                         text: 'Submit',
                         emoji: true
                     },
-                    callback_id: modalCallbacks.create_modal,
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    callback_id: modalCallbacks.createModal,
                     title: {
                         text: "Add a new term",
                         type: "plain_text"
@@ -114,10 +118,12 @@ describe('views', () => {
                     blocks: [
                         {
                             type: 'input',
+                            // eslint-disable-next-line @typescript-eslint/camelcase
                             block_id: 'new-term',
                             element: {
                               type: 'plain_text_input',
                               multiline: false,
+                              // eslint-disable-next-line @typescript-eslint/camelcase
                               action_id: 'new-term',
                               placeholder: {
                                 type: 'plain_text',
@@ -132,10 +138,12 @@ describe('views', () => {
                           },
                           {
                             type: 'input',
+                            // eslint-disable-next-line @typescript-eslint/camelcase
                             block_id: 'new-definition',
                             element: {
                               type: 'plain_text_input',
                               multiline: true,
+                              // eslint-disable-next-line @typescript-eslint/camelcase
                               action_id: 'new-definition',
                               placeholder: {
                                 type: 'plain_text',
@@ -150,7 +158,7 @@ describe('views', () => {
                           }
                     ]
                 };
-                expect(actual_value).to.eql(expected_value);
+                expect(actualValue).to.eql(expectedValue);
             })
         })
     })

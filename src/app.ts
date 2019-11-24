@@ -19,17 +19,17 @@ app.command(`/${globalActions.define}`, ({command, ack, respond}) => {
     respond(definition(command.text));
 });
 
-app.action({action_id: blockActions.add_a_term}, ({ack, context, body}) => {
+app.action({action_id: blockActions.addATerm}, ({ack, context, body}) => {
     ack();
     const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
     displayModal(app, context.botToken, castBody.trigger_id )
 });
 
-app.action({action_id: blockActions.search_for_term}, ({ack}) => {
+app.action({action_id: blockActions.searchForTerm}, ({ack}) => {
     ack();
 });
 
-app.view(modalCallbacks.create_modal, ({ack, body}) => {
+app.view(modalCallbacks.createModal, ({ack, body}) => {
     ack();
     console.log(body.view.state);
 });
