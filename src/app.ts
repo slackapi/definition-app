@@ -19,12 +19,14 @@ app.command(`/${globalActions.define}`, ({command, ack, respond}) => {
     respond(definition(command.text));
 });
 
+// eslint-disable-next-line @typescript-eslint/camelcase
 app.action({action_id: blockActions.addATerm}, ({ack, context, body}) => {
     ack();
     const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
-    displayModal(app, context.botToken, castBody.trigger_id )
+    displayModal(app, context.botToken, castBody.trigger_id)
 });
 
+// eslint-disable-next-line @typescript-eslint/camelcase
 app.action({action_id: blockActions.searchForTerm}, ({ack}) => {
     ack();
 });
@@ -33,6 +35,7 @@ app.view(modalCallbacks.createModal, ({ack, body}) => {
     ack();
     console.log(body.view.state);
 });
+
 (async () => {
     // Start your app
     await app.start(process.env.PORT || 3000);
