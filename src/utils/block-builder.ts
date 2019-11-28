@@ -29,8 +29,8 @@ export function divider(): DividerBlock {
     }
 }
 
-export function actionButton(text: string, actionID: string): Button {
-    return {
+export function actionButton(text: string, actionID: string, style?: 'primary' | 'danger'): Button {
+    const payload: Button = {
         type: 'button',
         text: {
             type: 'plain_text',
@@ -40,15 +40,24 @@ export function actionButton(text: string, actionID: string): Button {
         // eslint-disable-next-line @typescript-eslint/camelcase
         action_id: actionID
     }
+    if (style) {
+        payload.style = style;
+    }
+    return payload;
 }
 
-export function actions(actions: Action[], blockID: string): ActionsBlock {
-    return {
+export function actions(actions: Action[], blockID?: string): ActionsBlock {
+    const payload: ActionsBlock = {
         type: 'actions',
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        block_id: blockID,
         elements: actions
     }
+
+    if (blockID) {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        payload.block_id = blockID;
+    }
+
+    return payload;
 }
 
 export function section(text: string): SectionBlock {

@@ -6,35 +6,63 @@ import { globalActions } from '../config/actions'
 
 describe('Read actions', () => {
     describe('definition', () => {
-        it('returns a definition of the requested term, formatted as a Slack message', () => {
+        it('returns a definition of the requested term, formatted as a Slack message') // Needs some DB stubbing
+        it('returns a prompt to add a term if none is found', async () => {
             const testText = 'test';
-            const actualValue = definition(testText);
+            const actualValue = await definition(testText, 'T1234');
             const expectedValue = {
-                text: `${testText}`,
+                text: `There is currently no definition for the term ${testText}`,
                 blocks: [
                     {
                         type: "section",
                         text: {
                             type: "mrkdwn",
-                            text: `${testText}\nThis is a placeholder definition`
+                            text: `:question: There is currently no definition for the term ${testText}`
                         }
                     },
                     {
-                        type: "context",
+                        type: "divider"
+                    },
+                    {
+                        type: "section",
+                        text: {
+                            type: "mrkdwn",
+                            text: `Would you like to add one?`
+                        }
+                    },
+                    {
+                        type: 'actions',
                         elements: [
                             {
-                                type: "mrkdwn",
-                                text: `Last updated by <@U9UFK54EA> on <!date^1574421631^{date_pretty}|1574421631>`
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Yes',
+                                    emoji: true
+                                },
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'addATerm'
+                            },
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'No',
+                                    emoji: true
+                                },
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'clearMessage'
                             }
                         ]
                     }
+
                 ]
             };
             expect(actualValue).to.eql(expectedValue);
         })
-        it('returns a prompt to provide a term when no string is provided', () => {
+        it('returns a prompt to provide a term when no string is provided', async () => {
             const testText = '';
-            const actualValue = definition(testText);
+            const actualValue = await definition(testText, 'T1234');
             const expectedValue = {
                 text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
                 blocks: [
@@ -79,6 +107,16 @@ describe('Read actions', () => {
                                 },
                                 // eslint-disable-next-line @typescript-eslint/camelcase
                                 action_id: 'searchForTerm'
+                            },
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Cancel',
+                                    emoji: true
+                                },
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'clearMessage'
                             }
                         ]
                     }
@@ -86,9 +124,9 @@ describe('Read actions', () => {
             };
             expect(actualValue).to.eql(expectedValue);
         })
-        it('returns a prompt to provide a term when just spaces are provided', () => {
+        it('returns a prompt to provide a term when just spaces are provided', async () => {
             const testText = '          ';
-            const actualValue = definition(testText);
+            const actualValue = await definition(testText, 'T1234');
             const expectedValue = {
                 text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
                 blocks: [
@@ -133,7 +171,18 @@ describe('Read actions', () => {
                                 },
                                 // eslint-disable-next-line @typescript-eslint/camelcase
                                 action_id: 'searchForTerm'
+                            },
+                            {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Cancel',
+                                    emoji: true
+                                },
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'clearMessage'
                             }
+
                         ]
                     }
                 ]

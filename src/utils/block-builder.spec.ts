@@ -101,6 +101,23 @@ describe('Block builder', () => {
             };
             expect(actualValue).to.eql(expectedValue);
         })
+        it('returns a primary styled button action block', () => {
+            const testText = 'Test';
+            const testValue = 'TestValue';
+            const actualValue = actionButton(testText, testValue, 'primary');
+            const expectedValue = {
+                type: 'button',
+                text: {
+                    type: 'plain_text',
+                    text: testText,
+                    emoji: true
+                },
+                style: 'primary',
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                action_id: testValue
+            };
+            expect(actualValue).to.eql(expectedValue);
+        })
     })
     describe('actions', () => {
         it('returns an actions block', () => {

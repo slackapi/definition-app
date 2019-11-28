@@ -25,21 +25,39 @@ export function emptyQueryView(): MessagePayload {
             section(`You can use \`/${globalActions.define}\` to search for the definition of terms used by your company. What would you like to do?`),
             actions([
                 actionButton('Add a term', blockActions.addATerm),
-                actionButton('Search for a term', blockActions.searchForTerm)
+                actionButton('Search for a term', blockActions.searchForTerm),
+                actionButton('Cancel', blockActions.clearMessage),
             ],
                 blockActions.searchOrAdd)
         ]
     }
 }
 
-export function definitionResultView(term: string, definition: string, authorID: string, lastUpdateTS: number): MessagePayload {
+export function undefinedTermView(term: string): MessagePayload {
+    return {
+        text: `There is currently no definition for the term ${term}`,
+        blocks: [
+            section(`:question: There is currently no definition for the term ${term}`),
+            divider(),
+            section(`Would you like to add one?`),
+            actions(
+                [
+                    actionButton('Yes', blockActions.addATerm),
+                    actionButton('No', blockActions.clearMessage),
+                ],
+            )
+        ]
+    }
+}
+
+export function definitionResultView(term: string, definition: string, authorID: string, lastUpdateTS: Date): MessagePayload {
     return {
         text: `${term}`,
         blocks: [
-          section(`${term}\n${definition}`),
-          context(`Last updated by <@${authorID}> on <!date^${lastUpdateTS}^{date_pretty}|${lastUpdateTS}>`)
+            section(`*${term}*\n${definition}`),
+            context(`*Author*: <@${authorID}> *When*: <!date^${lastUpdateTS.getTime() / 1000}^{date_pretty}|${lastUpdateTS.getTime() / 1000}>`)
         ]
-      }
+    }
 }
 
 export function addTermModalView(): ViewsPayload {

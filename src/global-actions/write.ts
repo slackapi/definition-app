@@ -22,6 +22,7 @@ async function checkForExistingTerm(term: string): Promise<void> {
         'SELECT count(*) from definitions where term = ?',
         [term]
     ).then(async ([rows]) => {
+        connection.end();
         if ((rows as RowDataPacket)[0] > 0) {
             return Promise.resolve();
         }
@@ -72,8 +73,8 @@ export function displayModal(app: App, botToken: string, triggerID: string): voi
 }
 
 export function storeDefinitionFromModal(statePayload: ModalStatePayload, teamID: string, authorID: string): void {
-    const term = statePayload.values[modalFields.newTerm][modalFields.newTerm].value.toLowerCase();
-    const definition = statePayload.values[modalFields.newDefinition][modalFields.newDefinition].value.toLowerCase();
+    const term = statePayload.values[modalFields.newTerm][modalFields.newTerm].value;
+    const definition = statePayload.values[modalFields.newDefinition][modalFields.newDefinition].value;
     checkForExistingTerm(term).then(() => {
         console.log('Existing entry found');
     }).catch(() => {
