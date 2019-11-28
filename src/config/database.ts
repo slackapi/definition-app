@@ -4,7 +4,8 @@ dotenv.config();
 
 const databaseUrl = process.env.DATABASE_URL;
 
-const databaseConfig: {[k: string]: string} = {};
+const databaseConfig: {[k: string]: string | null | undefined } = {}; 
+// TODO we can probably do a better job of typings here
 
 if (databaseUrl) {
     // when the DATABASE_URL is defined, parse it for individual values

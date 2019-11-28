@@ -8,7 +8,8 @@
     "lint": "eslint src/**/*.ts",
     "start": "node build/app.js",
     "build": "tsc",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build",
+    "initdatabase": "node build/database/run-db-scripts.js"
   },
   "repository": {
     "type": "git",
@@ -23,11 +24,13 @@
   "dependencies": {
     "@slack/bolt": "^1.4.1",
     "dotenv": "^8.2.0",
+    "mysql2": "^2.0.1",
     "typescript": "^3.7.2"
   },
   "devDependencies": {
     "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
+    "@types/mysql2": "github:types/mysql2",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "@typescript-eslint/parser": "^2.8.0",
     "chai": "^4.2.0",
