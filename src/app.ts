@@ -6,7 +6,7 @@ import { App, BlockAction } from '@slack/bolt'
 import { globalActions, blockActions } from './config/actions'
 
 import { definition } from './global-actions/read'
-import { displayModal } from './global-actions/write'
+import { displayModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
 import { modalCallbacks } from './config/views';
 
 const app = new App({
@@ -33,10 +33,10 @@ app.action({action_id: blockActions.searchForTerm}, ({ack}) => {
 
 app.view(modalCallbacks.createModal, ({ack, body}) => {
     ack();
-    console.log(body.view.state);
+    storeDefinitionFromModal(body.view.state as ModalStatePayload);
 });
 
-(async () => {
+(async () : Promise<void> => {
     // Start your app
     await app.start(process.env.PORT || 3000);
   
