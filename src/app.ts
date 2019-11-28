@@ -33,7 +33,7 @@ app.action({action_id: blockActions.searchForTerm}, ({ack}) => {
 
 app.view(modalCallbacks.createModal, ({ack, body}) => {
     ack();
-    storeDefinitionFromModal(body.view.state as ModalStatePayload);
+    storeDefinitionFromModal(body.view.state as ModalStatePayload, body.team.id, body.user.id);
 });
 
 (async () : Promise<void> => {
