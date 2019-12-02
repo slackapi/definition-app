@@ -6,7 +6,7 @@ import { App, BlockAction } from '@slack/bolt'
 import { globalActions, blockActions } from './config/actions'
 
 import { definition } from './global-actions/read'
-import { displayModal } from './global-actions/write'
+import { displayModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
 import { modalCallbacks } from './config/views';
 
 const app = new App({
@@ -16,13 +16,23 @@ const app = new App({
 
 app.command(`/${globalActions.define}`, ({command, ack, respond}) => {
     ack();
-    respond(definition(command.text));
+    definition(command.text, command.team_id).then(result => {
+        respond(result)
+    }).catch(response => {
+        respond(response);
+    })
 });
 
 // eslint-disable-next-line @typescript-eslint/camelcase
-app.action({action_id: blockActions.addATerm}, ({ack, context, body}) => {
+app.action({action_id: blockActions.addATerm}, ({ack, context, body, respond}) => {
     ack();
     const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
+    respond({
+        channel: body.channel.id,
+        text:'',
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        delete_original: true
+    });
     displayModal(app, context.botToken, castBody.trigger_id)
 });
 
@@ -31,12 +41,23 @@ app.action({action_id: blockActions.searchForTerm}, ({ack}) => {
     ack();
 });
 
-app.view(modalCallbacks.createModal, ({ack, body}) => {
+// eslint-disable-next-line @typescript-eslint/camelcase
+app.action({action_id: blockActions.clearMessage}, ({ack, respond, body}) => {
     ack();
-    console.log(body.view.state);
+    respond({
+        channel: body.channel.id,
+        text:'',
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        delete_original: true
+    });
 });
 
-(async () => {
+app.view(modalCallbacks.createModal, ({ack, body}) => {
+    ack();
+    storeDefinitionFromModal(body.view.state as ModalStatePayload, body.team.id, body.user.id);
+});
+
+(async () : Promise<void> => {
     // Start your app
     await app.start(process.env.PORT || 3000);
   

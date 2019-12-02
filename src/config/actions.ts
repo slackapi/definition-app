@@ -5,5 +5,6 @@ export const globalActions = {
 export const blockActions = {
     addATerm: 'addATerm',
     searchForTerm: 'searchForTerm',
-    searchOrAdd: 'searchOrAdd'
+    searchOrAdd: 'searchOrAdd',
+    clearMessage: 'clearMessage'
 };

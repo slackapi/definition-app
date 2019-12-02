@@ -53,6 +53,16 @@ describe('views', () => {
                                     },
                                     // eslint-disable-next-line @typescript-eslint/camelcase
                                     action_id: 'searchForTerm'
+                                },
+                                {
+                                    type: 'button',
+                                    text: {
+                                        type: 'plain_text',
+                                        text: 'Cancel',
+                                        emoji: true
+                                    },
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
+                                    action_id: 'clearMessage'
                                 }
                             ]
                         }
@@ -66,7 +76,7 @@ describe('views', () => {
                 const testTerm = 'OKR';
                 const testDefinition = 'OKRs are objective and key results';
                 const testAuthorID = 'U1234567';
-                const testTimestamp = 12345678;
+                const testTimestamp = new Date();
                 const actualValue = definitionResultView(
                     testTerm,
                     testDefinition,
@@ -80,7 +90,7 @@ describe('views', () => {
                             type: "section",
                             text: {
                                 type: "mrkdwn",
-                                text: `${testTerm}\n${testDefinition}`
+                                text: `*${testTerm}*\n${testDefinition}`
                             }
                         },
                         {
@@ -88,7 +98,7 @@ describe('views', () => {
                             elements: [
                                 {
                                     type: "mrkdwn",
-                                    text: `Last updated by <@${testAuthorID}> on <!date^${testTimestamp}^{date_pretty}|${testTimestamp}>`
+                                    text: `*Author*: <@${testAuthorID}> *When*: <!date^${testTimestamp.getTime() / 1000}^{date_pretty}|${testTimestamp.getTime() / 1000}>`
                                 }
                             ]
                         }
