@@ -13,7 +13,9 @@ interface ViewsPayload {
     callback_id: string,
     title: PlainTextElement,
     blocks: Block[],
-    submit?: PlainTextElement
+    submit?: PlainTextElement,
+    private_metadata?: string,
+    close?: PlainTextElement
 }
 
 export function emptyQueryView(): MessagePayload {
@@ -54,7 +56,7 @@ export function definitionResultView(term: string, definition: string, authorID:
     return {
         text: `${term}`,
         blocks: [
-            sectionWithOverflow(`*${term}*\n${definition}`, [option('Update', optionValues.updateTerm), option('Remove', optionValues.removeTerm)], blockActions.termOverflowMenu),
+            sectionWithOverflow(`*${term}*\n${definition}`, [option('Update', `${optionValues.updateTerm}-${term}`), option('Remove', `${optionValues.removeTerm}-${term}`)], blockActions.termOverflowMenu),
             context(`*Author*: <@${authorID}> *When*: <!date^${lastUpdateTS.getTime() / 1000}^{date_pretty}|${lastUpdateTS.getTime() / 1000}>`)
         ]
     }
@@ -94,6 +96,48 @@ export function successFullyAddedTermView(term: string, definition: string): Vie
             section(`We've added ${term} to your company definitions`),
             divider(),
             section(`*${term}*\n${definition}`),
+        ]
+    }
+}
+
+export function confirmRemovalView(term: string): ViewsPayload {
+    return {
+        type: "modal",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.confirmRemovalModal,
+        submit: {
+            type: 'plain_text',
+            text: 'Remove',
+            emoji: true
+        },
+        close: {
+            type: 'plain_text',
+            text: 'Keep',
+            emoji: true
+        },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        private_metadata: term,
+        title: {
+            text: `Remove term`,
+            type: "plain_text"
+        },
+        blocks: [
+            section(`Are you sure you want to remove the term _${term}_? *This cannot be undone*.`),
+        ]
+    }
+}
+
+export function successfulRemovalView(term: string): ViewsPayload {
+    return {
+        type: "modal",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.successfulTermModal,
+        title: {
+            text: `${term} removed`,
+            type: "plain_text"
+        },
+        blocks: [
+            section(`We've removed ${term} from your company definitions`),
         ]
     }
 }

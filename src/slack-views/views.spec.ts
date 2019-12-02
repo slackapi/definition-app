@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { emptyQueryView, definitionResultView, addTermModalView, undefinedTermView, successFullyAddedTermView } from './views';
+import { emptyQueryView, definitionResultView, addTermModalView, undefinedTermView, successFullyAddedTermView, confirmRemovalView } from './views';
 import { globalActions } from '../config/actions';
 import { modalCallbacks } from '../config/views';
 
@@ -156,7 +156,7 @@ describe('views', () => {
                                             text: "Update",
                                             emoji: true
                                         },
-                                        value: 'updateTerm'
+                                        value: `updateTerm-${testTerm}`
                                     },
                                     {
                                         text: {
@@ -164,7 +164,7 @@ describe('views', () => {
                                             text: "Remove",
                                             emoji: true
                                         },
-                                        value: 'removeTerm'
+                                        value: `removeTerm-${testTerm}`
                                     },
                                 ],
                                 // eslint-disable-next-line @typescript-eslint/camelcase
@@ -187,6 +187,43 @@ describe('views', () => {
         })
     })
     describe('Modals', () => {
+        describe('confirmRemovalView', () => {
+            it('returns a formatted modal', () => {
+                const testTerm = 'OKR';
+                const actualValue = confirmRemovalView(testTerm);
+                const expectedValue = {
+                    type: "modal",
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    callback_id: "confirmRemovalModal",
+                    submit: {
+                        type: 'plain_text',
+                        text: 'Remove',
+                        emoji: true
+                    },
+                    close: {
+                        type: 'plain_text',
+                        text: 'Keep',
+                        emoji: true
+                    },
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    private_metadata: testTerm,
+                    title: {
+                        text: `Remove term`,
+                        type: "plain_text"
+                    },
+                    blocks: [
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: `Are you sure you want to remove the term _${testTerm}_? *This cannot be undone*.`
+                            }
+                        },
+                    ]
+                }
+                expect(actualValue).to.eql(expectedValue);
+            })
+        });
         describe('successFullyAddedTermView', () => {
             it('returns a formatted modal', () => {
                 const testTerm = 'OKR';

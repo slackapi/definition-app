@@ -1,6 +1,8 @@
 export const modalCallbacks = {
     createModal: 'createModal',
-    successfulTermModal: 'successfulTermModal'
+    successfulTermModal: 'successfulTermModal',
+    confirmRemovalModal: 'confirmRemovalModal',
+    successfulRemovalModal: 'successfulRemovalModal'
 };
 
 export const modalFields = {
