@@ -33,7 +33,7 @@ app.action({action_id: blockActions.addATerm}, ({ack, context, body, respond}) =
         // eslint-disable-next-line @typescript-eslint/camelcase
         delete_original: true
     });
-    displayModal(app, context.botToken, castBody.trigger_id)
+    displayModal(context.botToken, castBody.trigger_id)
 });
 
 // eslint-disable-next-line @typescript-eslint/camelcase
@@ -52,9 +52,10 @@ app.action({action_id: blockActions.clearMessage}, ({ack, respond, body}) => {
     });
 });
 
-app.view(modalCallbacks.createModal, ({ack, body}) => {
+app.view(modalCallbacks.createModal, ({ack, body, context}) => {
+    const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
     ack();
-    storeDefinitionFromModal(body.view.state as ModalStatePayload, body.team.id, body.user.id);
+    storeDefinitionFromModal(body.view.state as ModalStatePayload, body.team.id, body.user.id, castBody.trigger_id, context.botToken);
 });
 
 (async () : Promise<void> => {

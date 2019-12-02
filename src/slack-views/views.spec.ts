@@ -1,11 +1,66 @@
 import 'mocha'
 import { expect } from 'chai'
-import { emptyQueryView, definitionResultView, addTermModalView } from './views';
+import { emptyQueryView, definitionResultView, addTermModalView, undefinedTermView, successFullyAddedTermView } from './views';
 import { globalActions } from '../config/actions';
 import { modalCallbacks } from '../config/views';
 
 describe('views', () => {
     describe('Messages', () => {
+        describe('undefinedTermView', () => {
+            it('returns a formatted message block', () => {
+                const testTerm = 'OKR';
+                const actualValue = undefinedTermView(testTerm);
+                const expectedValue = {
+                    text: `There is currently no definition for the term ${testTerm}`,
+                    blocks: [
+                        {
+                            type: 'section',
+                            text: {
+                                type: 'mrkdwn',
+                                text: `:question: There is currently no definition for the term ${testTerm}`
+                            }
+                        },
+                        {
+                            type: 'divider'
+                        },
+                        {
+                            type: 'section',
+                            text: {
+                                type: 'mrkdwn',
+                                text: `Would you like to add one?`
+                            }
+                        },
+                        {
+                            type: 'actions',
+                            // eslint-disable-next-line @typescript-eslint/camelcase
+                            elements: [
+                                {
+                                    type: 'button',
+                                    text: {
+                                        type: 'plain_text',
+                                        text: 'Yes',
+                                        emoji: true
+                                    },
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
+                                    action_id: 'addATerm'
+                                },
+                                {
+                                    type: 'button',
+                                    text: {
+                                        type: 'plain_text',
+                                        text: 'No',
+                                        emoji: true
+                                    },
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
+                                    action_id: 'clearMessage'
+                                }
+                            ]
+                        }
+                    ]
+                }
+                expect(actualValue).to.eql(expectedValue);
+            })
+        });
         describe('emptyQueryView', () => {
             it('returns a formatted message block', () => {
                 const actualValue = emptyQueryView();
@@ -109,6 +164,43 @@ describe('views', () => {
         })
     })
     describe('Modals', () => {
+        describe('successFullyAddedTermView', () => {
+            it('returns a formatted modal', () => {
+                const testTerm = 'OKR';
+                const testDefinition = 'Objective and key results';
+                const actualValue = successFullyAddedTermView(testTerm, testDefinition);
+                const expectedValue = {
+                    type: "modal",
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    callback_id: modalCallbacks.successfulTermModal,
+                    title: {
+                        text: `${testTerm} added`,
+                        type: "plain_text"
+                    },
+                    blocks: [
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: `We've added ${testTerm} to your company definitions`
+                            }
+                        },
+                        {
+                            type: "divider"
+                        },
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: `*${testTerm}*\n${testDefinition}`
+                            }
+                        },
+
+                    ]
+                }
+                expect(actualValue).to.eql(expectedValue);
+            })
+        });
         describe('addTermModalView', () => {
             it('returns a formatted modal', () => {
                 const actualValue = addTermModalView();
@@ -131,41 +223,41 @@ describe('views', () => {
                             // eslint-disable-next-line @typescript-eslint/camelcase
                             block_id: 'new-term',
                             element: {
-                              type: 'plain_text_input',
-                              multiline: false,
-                              // eslint-disable-next-line @typescript-eslint/camelcase
-                              action_id: 'new-term',
-                              placeholder: {
-                                type: 'plain_text',
-                                text: 'The term you want to define'
-                              }
+                                type: 'plain_text_input',
+                                multiline: false,
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'new-term',
+                                placeholder: {
+                                    type: 'plain_text',
+                                    text: 'The term you want to define'
+                                }
                             },
                             label: {
-                              type: 'plain_text',
-                              text: 'Term',
-                              emoji: true
+                                type: 'plain_text',
+                                text: 'Term',
+                                emoji: true
                             }
-                          },
-                          {
+                        },
+                        {
                             type: 'input',
                             // eslint-disable-next-line @typescript-eslint/camelcase
                             block_id: 'new-definition',
                             element: {
-                              type: 'plain_text_input',
-                              multiline: true,
-                              // eslint-disable-next-line @typescript-eslint/camelcase
-                              action_id: 'new-definition',
-                              placeholder: {
-                                type: 'plain_text',
-                                text: 'The definition of the term'
-                              }
+                                type: 'plain_text_input',
+                                multiline: true,
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'new-definition',
+                                placeholder: {
+                                    type: 'plain_text',
+                                    text: 'The definition of the term'
+                                }
                             },
                             label: {
-                              type: 'plain_text',
-                              text: 'Definition',
-                              emoji: true
+                                type: 'plain_text',
+                                text: 'Definition',
+                                emoji: true
                             }
-                          }
+                        }
                     ]
                 };
                 expect(actualValue).to.eql(expectedValue);

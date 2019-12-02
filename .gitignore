@@ -11,3 +11,6 @@ build/
 .vscode/
 
 .DS_Store
+
+.nyc_output/
+coverage/

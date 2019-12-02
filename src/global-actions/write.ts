@@ -1,5 +1,5 @@
 import { App } from "@slack/bolt";
-import { addTermModalView } from '../slack-views/views'
+import { addTermModalView, successFullyAddedTermView } from '../slack-views/views'
 import { modalFields } from "../config/views";
 import { createConnection, RowDataPacket } from "mysql2/promise";
 import databaseConfig from "../config/database";
@@ -43,7 +43,7 @@ async function addNewTerm(term: string, definition: string, teamID: string, auth
         created: creationDate,
         updated: creationDate,
     }
-    await connection.execute(
+    connection.execute(
         'INSERT into definitions SET term = ?, definition = ?, team_id = ?, author_id = ?, revision = ?, created = ?, updated = ?',
         [
             newTermObject.term,
@@ -57,13 +57,20 @@ async function addNewTerm(term: string, definition: string, teamID: string, auth
     ).then(() => {
         console.log('success!')
         connection.end();
+        return Promise.resolve('Term Added');
     }).catch((error) => {
         console.log(error);
         connection.end();
+        return Promise.reject(error);
     });
 
 }
-export function displayModal(app: App, botToken: string, triggerID: string): void {
+
+export function displayModal(botToken: string, triggerID: string): void {
+    const app = new App({
+        token: process.env.SLACK_BOT_TOKEN,
+        signingSecret: process.env.SLACK_SIGNING_SECRET
+    });
     app.client.views.open({
         token: botToken,
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -72,15 +79,23 @@ export function displayModal(app: App, botToken: string, triggerID: string): voi
     }).then().catch(error => console.log(JSON.stringify(error, null, 2)));
 }
 
-export function storeDefinitionFromModal(statePayload: ModalStatePayload, teamID: string, authorID: string): void {
+export function storeDefinitionFromModal(statePayload: ModalStatePayload, teamID: string, authorID: string, triggerID: string, token: string): void {
     const term = statePayload.values[modalFields.newTerm][modalFields.newTerm].value;
     const definition = statePayload.values[modalFields.newDefinition][modalFields.newDefinition].value;
+    const app = new App({
+        token: process.env.SLACK_BOT_TOKEN,
+        signingSecret: process.env.SLACK_SIGNING_SECRET
+    });
     checkForExistingTerm(term).then(() => {
         console.log('Existing entry found');
     }).catch(() => {
-        console.log('good to add term');
         console.log(`Adding ${term} as ${definition}`);
-        addNewTerm(term, definition, teamID, authorID);
+        addNewTerm(term, definition, teamID, authorID).then(() => {
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            app.client.views.open({ trigger_id: triggerID, view: successFullyAddedTermView(term, definition), token: token }).catch(error => {
+                console.error(error);
+            });
+        });
     })
 
 }

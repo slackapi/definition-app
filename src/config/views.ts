@@ -1,5 +1,6 @@
 export const modalCallbacks = {
-    createModal: 'createModal'
+    createModal: 'createModal',
+    successfulTermModal: 'successfulTermModal'
 };
 
 export const modalFields = {

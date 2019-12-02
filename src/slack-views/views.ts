@@ -80,3 +80,20 @@ export function addTermModalView(): ViewsPayload {
         ]
     }
 }
+
+export function successFullyAddedTermView(term: string, definition: string): ViewsPayload {
+    return {
+        type: "modal",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.successfulTermModal,
+        title: {
+            text: `${term} added`,
+            type: "plain_text"
+        },
+        blocks: [
+            section(`We've added ${term} to your company definitions`),
+            divider(),
+            section(`*${term}*\n${definition}`),
+        ]
+    }
+}
