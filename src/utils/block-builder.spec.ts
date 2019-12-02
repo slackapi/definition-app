@@ -3,6 +3,50 @@ import { expect } from 'chai'
 import { context, section, option, sectionWithOverflow, divider, actionButton, actions, input } from './block-builder'
 
 describe('Block builder', () => {
+    describe('sections', () => {
+        describe('section', () => {
+            it('returns a formatted section block containing the provided text', () => {
+                const testText = 'test';
+                const actualValue = section(testText);
+                const expectedValue = {
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: testText
+                    }
+                };
+                expect(actualValue).to.eql(expectedValue);
+            })
+        })
+        describe('sectionWithOverflow', () => {
+            it('returns a formatted section block containing the provided text and an overflow', () => {
+                const testText = 'test';
+                const testValue = 'test-value';
+                const actualValue = sectionWithOverflow(testText, [option(testText, testValue)], testValue);
+                const expectedValue = {
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: testText
+                    },
+                    accessory: {
+                        type: "overflow",
+                        options: [{
+                            text: {
+                                type: "plain_text",
+                                text: testText,
+                                emoji: true
+                            },
+                            value: testValue
+                        }],
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        action_id: testValue
+                    }
+                };
+                expect(actualValue).to.eql(expectedValue);
+            })
+        })
+    })
     describe('context', () => {
         it('returns a formatted context block containing the provided text', () => {
             const testText = 'test';
@@ -19,46 +63,7 @@ describe('Block builder', () => {
             expect(actualValue).to.eql(expectedValue);
         })
     })
-    describe('section', () => {
-        it('returns a formatted section block containing the provided text', () => {
-            const testText = 'test';
-            const actualValue = section(testText);
-            const expectedValue = {
-                type: "section",
-                text: {
-                    type: "mrkdwn",
-                    text: testText
-                }
-            };
-            expect(actualValue).to.eql(expectedValue);
-        })
-    })
-    describe('sectionWithOverflow', () => {
-        it('returns a formatted section block containing the provided text and an overflow', () => {
-            const testText = 'test';
-            const testValue = 'test-value';
-            const actualValue = sectionWithOverflow(testText, [option(testText, testValue)]);
-            const expectedValue = {
-                type: "section",
-                text: {
-                    type: "mrkdwn",
-                    text: testText
-                },
-                accessory: {
-                    type: "overflow",
-                    options: [{
-                        text: {
-                            type: "plain_text",
-                            text: testText,
-                            emoji: true
-                        },
-                        value: testValue
-                    }]
-                }
-            };
-            expect(actualValue).to.eql(expectedValue);
-        })
-    })
+
     describe('option', () => {
         it('returns a formatted option', () => {
             const testText = 'test';
@@ -70,7 +75,7 @@ describe('Block builder', () => {
                     text: testText,
                     emoji: true
                 },
-                value: testValue
+                value: testValue,
             };
             expect(actualValue).to.eql(expectedValue);
         })

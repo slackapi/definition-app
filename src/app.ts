@@ -52,6 +52,11 @@ app.action({action_id: blockActions.clearMessage}, ({ack, respond, body}) => {
     });
 });
 
+// eslint-disable-next-line @typescript-eslint/camelcase
+app.action({action_id: blockActions.termOverflowMenu}, ({ack}) => {
+    ack();
+})
+
 app.view(modalCallbacks.createModal, ({ack, body, context}) => {
     const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
     ack();

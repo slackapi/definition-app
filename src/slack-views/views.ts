@@ -1,7 +1,7 @@
 import { Block, PlainTextElement } from "@slack/types";
-import { globalActions, blockActions } from "../config/actions";
+import { globalActions, blockActions, optionValues } from "../config/actions";
 import { modalCallbacks } from "../config/views";
-import { section, divider, actionButton, actions, context, input } from '../utils/block-builder'
+import { section, divider, actionButton, actions, context, input, sectionWithOverflow, option } from '../utils/block-builder'
 
 interface MessagePayload {
     text: string,
@@ -54,7 +54,7 @@ export function definitionResultView(term: string, definition: string, authorID:
     return {
         text: `${term}`,
         blocks: [
-            section(`*${term}*\n${definition}`),
+            sectionWithOverflow(`*${term}*\n${definition}`, [option('Update', optionValues.updateTerm), option('Remove', optionValues.removeTerm)], blockActions.termOverflowMenu),
             context(`*Author*: <@${authorID}> *When*: <!date^${lastUpdateTS.getTime() / 1000}^{date_pretty}|${lastUpdateTS.getTime() / 1000}>`)
         ]
     }

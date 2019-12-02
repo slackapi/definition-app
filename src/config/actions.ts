@@ -6,5 +6,11 @@ export const blockActions = {
     addATerm: 'addATerm',
     searchForTerm: 'searchForTerm',
     searchOrAdd: 'searchOrAdd',
-    clearMessage: 'clearMessage'
+    clearMessage: 'clearMessage',
+    termOverflowMenu: 'termOverflowMenu'
 };
+
+export const optionValues = {
+    updateTerm: 'updateTerm',
+    removeTerm: 'removeTerm'
+}

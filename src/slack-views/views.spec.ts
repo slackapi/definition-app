@@ -146,6 +146,29 @@ describe('views', () => {
                             text: {
                                 type: "mrkdwn",
                                 text: `*${testTerm}*\n${testDefinition}`
+                            },
+                            accessory: {
+                                type: "overflow",
+                                options: [
+                                    {
+                                        text: {
+                                            type: "plain_text",
+                                            text: "Update",
+                                            emoji: true
+                                        },
+                                        value: 'updateTerm'
+                                    },
+                                    {
+                                        text: {
+                                            type: "plain_text",
+                                            text: "Remove",
+                                            emoji: true
+                                        },
+                                        value: 'removeTerm'
+                                    },
+                                ],
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'termOverflowMenu'
                             }
                         },
                         {
