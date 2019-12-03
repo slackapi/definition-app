@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import 'request'
 
 import { App, BlockAction, OverflowAction } from '@slack/bolt'
 
