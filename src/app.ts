@@ -10,6 +10,7 @@ import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from
 import { modalCallbacks } from './config/views';
 import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
 import request from 'request';
+import { displayUpdateTermModal } from './global-actions/update';
 
 const app = new App({
     token: process.env.SLACK_BOT_TOKEN,
@@ -61,10 +62,9 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
     const castPayload = payload as unknown as OverflowAction; // TODO why does TypeScript not support trigger_id on body?
     const actionValue = castPayload.selected_option.value;
     const actionSplit = actionValue.split('-', 2);
-    console.log(actionSplit);
     switch (actionSplit[0]) {
         case optionValues.updateTerm:
-            console.log(`Update ${actionSplit[1]}`)
+            displayUpdateTermModal(context.botToken, castBody.trigger_id, actionSplit[1], body.team.id)
             break;
         case optionValues.removeTerm:
             displayRemovalConfirmationModal(

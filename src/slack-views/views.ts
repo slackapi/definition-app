@@ -56,8 +56,39 @@ export function definitionResultView(term: string, definition: string, authorID:
     return {
         text: `${term}`,
         blocks: [
-            sectionWithOverflow(`*${term}*\n${definition}`, [option('Remove', `${optionValues.removeTerm}-${term}`)], blockActions.termOverflowMenu),
+            sectionWithOverflow(
+                `*${term}*\n${definition}`, 
+                [
+                    option('Update', `${optionValues.updateTerm}-${term}`),
+                    option('Remove', `${optionValues.removeTerm}-${term}`)
+                ],
+                blockActions.termOverflowMenu),
             context(`*Author*: <@${authorID}> *When*: <!date^${lastUpdateTS.getTime() / 1000}^{date_pretty}|${lastUpdateTS.getTime() / 1000}>`)
+        ]
+    }
+}
+
+export function updateTermView(term: string, definition:string) : ViewsPayload {
+    return {
+        type: "modal",
+        submit: {
+            type: 'plain_text',
+            text: 'Update',
+            emoji: true
+        },
+        close: {
+            type: 'plain_text',
+            text: 'Cancel',
+            emoji: true
+        },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.updateTermModal,
+        title: {
+            text: `Update ${term}`,
+            type: "plain_text"
+        },
+        blocks: [
+            plainTextInput(`Definition of ${term}`, 'new-definition', `The definition of ${term}`, true, definition)
         ]
     }
 }

@@ -10,7 +10,7 @@ interface TermFromDatabase {
   updated: Date | string
 }
 
-async function retrieveDefinition(term: string, teamID: string): Promise<TermFromDatabase> {
+export async function retrieveDefinition(term: string, teamID: string): Promise<TermFromDatabase> {
   const connection = await createConnection(databaseConfig);
 
   return await connection.query(

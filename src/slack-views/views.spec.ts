@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { emptyQueryView, definitionResultView, addTermModalView, undefinedTermView, successFullyAddedTermView, confirmRemovalView } from './views';
+import { emptyQueryView, definitionResultView, addTermModalView, undefinedTermView, successFullyAddedTermView, confirmRemovalView, updateTermView } from './views';
 import { globalActions } from '../config/actions';
 import { modalCallbacks } from '../config/views';
 
@@ -151,7 +151,15 @@ describe('views', () => {
                             accessory: {
                                 type: "overflow",
                                 options: [
-                                      {
+                                    {
+                                        text: {
+                                            type: "plain_text",
+                                            text: "Update",
+                                            emoji: true
+                                        },
+                                        value: `updateTerm-${testTerm}`
+                                    },
+                                    {
                                         text: {
                                             type: "plain_text",
                                             text: "Remove",
@@ -213,6 +221,59 @@ describe('views', () => {
                                 text: `Are you sure you want to remove the term _${testTerm}_? *This cannot be undone*.`
                             }
                         },
+                    ]
+                }
+                expect(actualValue).to.eql(expectedValue);
+            })
+        });
+        describe('updateTermView', () => {
+            it('returns a formatted modal', () => {
+                const testTerm = 'OKR';
+                const testDefinition = 'Objectives and key results';
+                const actualValue = updateTermView(testTerm, testDefinition);
+                const expectedValue = {
+                    type: "modal",
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    callback_id: "updateTermModal",
+                    submit: {
+                        type: 'plain_text',
+                        text: 'Update',
+                        emoji: true
+                    },
+                    close: {
+                        type: 'plain_text',
+                        text: 'Cancel',
+                        emoji: true
+                    },
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    title: {
+                        text: `Update ${testTerm}`,
+                        type: "plain_text"
+                    },
+                    blocks: [
+                        {
+                            type: 'input',
+                            // eslint-disable-next-line @typescript-eslint/camelcase
+                            block_id: 'new-definition',
+                            element: {
+                                type: 'plain_text_input',
+                                multiline: true,
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'new-definition',
+                                placeholder: {
+                                    type: 'plain_text',
+                                    text: `The definition of ${testTerm}`
+                                },
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                initial_value: testDefinition
+
+                            },
+                            label: {
+                                type: 'plain_text',
+                                text: `Definition of ${testTerm}`,
+                                emoji: true
+                            }
+                        }
                     ]
                 }
                 expect(actualValue).to.eql(expectedValue);
