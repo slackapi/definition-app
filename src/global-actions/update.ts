@@ -62,7 +62,7 @@ export function updateDefinitionFromModal(storedTerm: TermFromDatabase, statePay
         token: process.env.SLACK_BOT_TOKEN,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
-    checkForExistingTerm(storedTerm.term).then((result) => {
+    checkForExistingTerm(storedTerm.term, storedTerm.teamID).then((result) => {
         if (result) {
             updateTerm(storedTerm.term, definition, storedTerm.revision, storedTerm.authorID, storedTerm.teamID).then(() => {
                 // eslint-disable-next-line @typescript-eslint/camelcase

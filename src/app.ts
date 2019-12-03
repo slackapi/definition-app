@@ -71,7 +71,8 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
                 actionSplit[1],
                 context.botToken,
                 castBody.trigger_id,
-                castBody.response_url);
+                castBody.response_url,
+                body.team.id);
             break;
         default:
             console.error(`Unknown option value: ${actionSplit[0]}`);

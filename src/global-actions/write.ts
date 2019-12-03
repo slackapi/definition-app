@@ -15,12 +15,12 @@ export interface ModalStatePayload {
     }
 }
 
-export async function checkForExistingTerm(term: string): Promise<boolean> { // TODO Move this to a generic class
+export async function checkForExistingTerm(term: string, teamID: string): Promise<boolean> { // TODO Move this to a generic class
     const connection = await createConnection(databaseConfig);
 
     return await connection.query(
-        'SELECT count(*) from definitions where term = ?', // TODO !!! Add a team ID filter
-        [term]
+        'SELECT count(*) from definitions where term = ? AND team_id = ?',
+        [term, teamID]
     ).then(async ([rows]) => {
         connection.end();
         if ((rows as RowDataPacket)[0]['count(*)'] > 0) {
@@ -91,7 +91,7 @@ export function storeDefinitionFromModal(statePayload: ModalStatePayload, teamID
         token: process.env.SLACK_BOT_TOKEN,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
-    checkForExistingTerm(term).then((result) => {
+    checkForExistingTerm(term, teamID).then((result) => {
         if (result) {
             console.log('Existing entry found');
         } else {
