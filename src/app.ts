@@ -10,7 +10,7 @@ import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from
 import { modalCallbacks } from './config/views';
 import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
 import request from 'request';
-import { displayUpdateTermModal } from './global-actions/update';
+import { displayUpdateTermModal, updateDefinitionFromModal } from './global-actions/update';
 
 const app = new App({
     token: process.env.SLACK_BOT_TOKEN,
@@ -88,11 +88,18 @@ app.view(modalCallbacks.confirmRemovalModal, ({ ack, body, context }) => {
     ack();
     const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
     const metadata = JSON.parse(body.view.private_metadata);
-    removeTerm(metadata).then(() => {
+    removeTerm(metadata.term).then(() => {
         // eslint-disable-next-line @typescript-eslint/camelcase
         request.post(metadata['responseURL'], {json: { delete_original: true }});
         displaySuccessfulRemovalModal(metadata['term'], context.botToken, castBody.trigger_id);
     });
+});
+
+app.view(modalCallbacks.updateTermModal, ({ack, body, context}) => {
+    ack();
+    const metadata = JSON.parse(body.view.private_metadata);
+    const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
+    updateDefinitionFromModal(metadata, body.view.state as ModalStatePayload, castBody.trigger_id, context.botToken);
 });
 
 (async (): Promise<void> => {

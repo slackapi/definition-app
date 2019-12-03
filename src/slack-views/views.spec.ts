@@ -3,6 +3,7 @@ import { expect } from 'chai'
 import { emptyQueryView, definitionResultView, addTermModalView, undefinedTermView, successFullyAddedTermView, confirmRemovalView, updateTermView } from './views';
 import { globalActions } from '../config/actions';
 import { modalCallbacks } from '../config/views';
+import { TermFromDatabase } from '../global-actions/read';
 
 describe('views', () => {
     describe('Messages', () => {
@@ -230,7 +231,15 @@ describe('views', () => {
             it('returns a formatted modal', () => {
                 const testTerm = 'OKR';
                 const testDefinition = 'Objectives and key results';
-                const actualValue = updateTermView(testTerm, testDefinition);
+                const testTermFromDB: TermFromDatabase = {
+                    term: testTerm,
+                    definition: testDefinition,
+                    authorID: '',
+                    updated: '',
+                    revision: 0,
+                    teamID: ''
+                  }
+                const actualValue = updateTermView(testTermFromDB);
                 const expectedValue = {
                     type: "modal",
                     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -250,6 +259,8 @@ describe('views', () => {
                         text: `Update ${testTerm}`,
                         type: "plain_text"
                     },
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    private_metadata: JSON.stringify(testTermFromDB),
                     blocks: [
                         {
                             type: 'input',
