@@ -29,7 +29,7 @@ export async function displayRemovalConfirmationModal(term: string, botToken: st
     });
 
     if (await checkForExistingTerm(term)) {
-    
+
         app.client.views.open({
             token: botToken,
             view: confirmRemovalView(term, responseURL),
@@ -53,7 +53,7 @@ export async function displayRemovalConfirmationModal(term: string, botToken: st
 
     return;
 
-    
+
 }
 
 export function displaySuccessfulRemovalModal(term: string, botToken: string, triggerID: string): void {
@@ -70,5 +70,5 @@ export function displaySuccessfulRemovalModal(term: string, botToken: string, tr
     }).catch(error => {
         console.error(error);
     })
-    
+
 }

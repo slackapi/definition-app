@@ -18,21 +18,21 @@ export interface ModalStatePayload {
 export async function checkForExistingTerm(term: string): Promise<boolean> { // TODO Move this to a generic class
     const connection = await createConnection(databaseConfig);
 
-    await connection.query(
+    return await connection.query(
         'SELECT count(*) from definitions where term = ?',
         [term]
     ).then(async ([rows]) => {
         connection.end();
-        if ((rows as RowDataPacket)[0] > 0) {
+        if ((rows as RowDataPacket)[0]['count(*)'] > 0) {
             return Promise.resolve(true);
         }
 
         return Promise.resolve(false);
+
     }).catch(error => {
         console.error(error);
+        return Promise.reject(error);
     });
-
-    return Promise.resolve(false);
 
 }
 
