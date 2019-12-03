@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import 'request'
 
 import { App, BlockAction, OverflowAction } from '@slack/bolt'
 
@@ -9,6 +10,7 @@ import { definition } from './global-actions/read'
 import { displayModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
 import { modalCallbacks } from './config/views';
 import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
+import request from 'request';
 
 const app = new App({
     token: process.env.SLACK_BOT_TOKEN,
@@ -66,8 +68,11 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
             console.log(`Update ${actionSplit[1]}`)
             break;
         case optionValues.removeTerm:
-            console.log(`Update ${actionSplit[1]}`);
-            displayRemovalConfirmationModal(actionSplit[1], context.botToken, castBody.trigger_id);
+            displayRemovalConfirmationModal(
+                actionSplit[1],
+                context.botToken,
+                castBody.trigger_id,
+                castBody.response_url);
             break;
         default:
             console.error(`Unknown option value: ${actionSplit[0]}`);
@@ -80,11 +85,14 @@ app.view(modalCallbacks.createModal, ({ ack, body, context }) => {
     storeDefinitionFromModal(body.view.state as ModalStatePayload, body.team.id, body.user.id, castBody.trigger_id, context.botToken);
 });
 
-app.view(modalCallbacks.confirmRemovalModal, ({ack, body, context}) => {
+app.view(modalCallbacks.confirmRemovalModal, ({ ack, body, context }) => {
     ack();
     const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
-    removeTerm(body.view.private_metadata).then(() => {
-        displaySuccessfulRemovalModal(body.view.private_metadata, context.botToken, castBody.trigger_id);
+    const metadata = JSON.parse(body.view.private_metadata);
+    removeTerm(metadata).then(() => {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        request.post(metadata['responseURL'], {json: { delete_original: true }});
+        displaySuccessfulRemovalModal(metadata['term'], context.botToken, castBody.trigger_id);
     });
 });
 

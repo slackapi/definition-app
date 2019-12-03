@@ -100,7 +100,7 @@ export function successFullyAddedTermView(term: string, definition: string): Vie
     }
 }
 
-export function confirmRemovalView(term: string): ViewsPayload {
+export function confirmRemovalView(term: string, responseURL: string): ViewsPayload {
     return {
         type: "modal",
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -116,7 +116,7 @@ export function confirmRemovalView(term: string): ViewsPayload {
             emoji: true
         },
         // eslint-disable-next-line @typescript-eslint/camelcase
-        private_metadata: term,
+        private_metadata: JSON.stringify({term, responseURL}),
         title: {
             text: `Remove term`,
             type: "plain_text"

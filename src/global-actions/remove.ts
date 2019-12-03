@@ -21,7 +21,7 @@ export async function removeTerm(term: string): Promise<void> {
     });
 }
 
-export function displayRemovalConfirmationModal(term: string, botToken: string, triggerID: string): void {
+export function displayRemovalConfirmationModal(term: string, botToken: string, triggerID: string, responseURL: string): void {
     const app = new App({
         token: process.env.SLACK_BOT_TOKEN,
         signingSecret: process.env.SLACK_SIGNING_SECRET
@@ -29,7 +29,7 @@ export function displayRemovalConfirmationModal(term: string, botToken: string, 
 
     app.client.views.open({
         token: botToken,
-        view: confirmRemovalView(term),
+        view: confirmRemovalView(term, responseURL),
         // eslint-disable-next-line @typescript-eslint/camelcase
         trigger_id: triggerID
     }).catch(error => {

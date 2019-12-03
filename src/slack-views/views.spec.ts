@@ -190,7 +190,8 @@ describe('views', () => {
         describe('confirmRemovalView', () => {
             it('returns a formatted modal', () => {
                 const testTerm = 'OKR';
-                const actualValue = confirmRemovalView(testTerm);
+                const testResponseURL = 'https://localhost/'
+                const actualValue = confirmRemovalView(testTerm, testResponseURL);
                 const expectedValue = {
                     type: "modal",
                     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -206,7 +207,7 @@ describe('views', () => {
                         emoji: true
                     },
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    private_metadata: testTerm,
+                    private_metadata: JSON.stringify({term: testTerm, responseURL: testResponseURL}),
                     title: {
                         text: `Remove term`,
                         type: "plain_text"
