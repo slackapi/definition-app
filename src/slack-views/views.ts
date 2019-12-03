@@ -1,7 +1,7 @@
 import { Block, PlainTextElement } from "@slack/types";
 import { globalActions, blockActions, optionValues } from "../config/actions";
 import { modalCallbacks } from "../config/views";
-import { section, divider, actionButton, actions, context, input, sectionWithOverflow, option } from '../utils/block-builder'
+import { section, divider, actionButton, actions, context, plainTextInput, sectionWithOverflow, option } from '../utils/block-builder'
 
 interface MessagePayload {
     text: string,
@@ -44,7 +44,7 @@ export function undefinedTermView(term: string): MessagePayload {
             section(`Would you like to add one?`),
             actions(
                 [
-                    actionButton('Yes', blockActions.addATerm),
+                    actionButton('Yes', blockActions.addATerm, undefined, term),
                     actionButton('No', blockActions.clearMessage),
                 ],
             )
@@ -62,7 +62,7 @@ export function definitionResultView(term: string, definition: string, authorID:
     }
 }
 
-export function addTermModalView(): ViewsPayload {
+export function addTermModalView(term?: string): ViewsPayload {
     return {
         type: "modal",
         submit: {
@@ -77,8 +77,8 @@ export function addTermModalView(): ViewsPayload {
             type: "plain_text"
         },
         blocks: [
-            input('Term', 'new-term', 'The term you want to define'),
-            input('Definition', 'new-definition', 'The definition of the term', true)
+            plainTextInput('Term', 'new-term', 'The term you want to define', false, term),
+            plainTextInput('Definition', 'new-definition', 'The definition of the term', true)
         ]
     }
 }

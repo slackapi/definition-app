@@ -1,4 +1,4 @@
-import { ContextBlock, SectionBlock, Option, DividerBlock, Action, ActionsBlock, Button, InputBlock } from '@slack/types'
+import { ContextBlock, SectionBlock, Option, DividerBlock, Action, ActionsBlock, Button, InputBlock, PlainTextInput } from '@slack/types'
 
 export function context(text: string): ContextBlock {
     return {
@@ -29,7 +29,7 @@ export function divider(): DividerBlock {
     }
 }
 
-export function actionButton(text: string, actionID: string, style?: 'primary' | 'danger'): Button {
+export function actionButton(text: string, actionID: string, style?: 'primary' | 'danger', value?: string): Button {
     const payload: Button = {
         type: 'button',
         text: {
@@ -43,6 +43,11 @@ export function actionButton(text: string, actionID: string, style?: 'primary' |
     if (style) {
         payload.style = style;
     }
+
+    if (value) {
+        payload.value = value;
+    }
+
     return payload;
 }
 
@@ -86,25 +91,38 @@ export function sectionWithOverflow(text: string, options: Option[], actionID: s
     }
 }
 
-export function input(title: string, actionID: string, placeholder = ' ', multiline = false):  InputBlock {
-    return {
+export function plainTextInput(title: string, actionID: string, placeholder = ' ', multiline = false, initialValue?: string):  InputBlock {
+
+    const element: PlainTextInput = {
+        type: 'plain_text_input',
+        multiline,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        action_id: actionID,
+        placeholder : {
+            type: 'plain_text',
+            text: placeholder
+        }
+    }
+    if (initialValue) {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        element.initial_value = initialValue
+    }
+
+    const blockPayload: InputBlock = {
         type: 'input',
         // eslint-disable-next-line @typescript-eslint/camelcase
         block_id: actionID,
-        element: {
-            type: 'plain_text_input',
-            multiline,
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            action_id: actionID,
-            placeholder : {
-                type: 'plain_text',
-                text: placeholder
-            }
-        },
+        element,
         label: {
             type: 'plain_text',
             text: title,
             emoji: true
         }
     }
+
+    
+
+
+
+    return blockPayload;
 }

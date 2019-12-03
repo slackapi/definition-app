@@ -1,12 +1,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { App, BlockAction, OverflowAction } from '@slack/bolt'
+import { App, BlockAction, OverflowAction, ButtonAction } from '@slack/bolt'
 
 import { globalActions, blockActions, optionValues } from './config/actions'
 
 import { definition } from './global-actions/read'
-import { displayModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
+import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
 import { modalCallbacks } from './config/views';
 import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
 import request from 'request';
@@ -35,7 +35,7 @@ app.action({ action_id: blockActions.addATerm }, ({ ack, context, body, respond 
         // eslint-disable-next-line @typescript-eslint/camelcase
         delete_original: true
     });
-    displayModal(context.botToken, castBody.trigger_id)
+    displayAddTermModal(context.botToken, castBody.trigger_id, (castBody.actions[0] as ButtonAction).value)
 });
 
 // eslint-disable-next-line @typescript-eslint/camelcase

@@ -42,7 +42,8 @@ describe('views', () => {
                                         emoji: true
                                     },
                                     // eslint-disable-next-line @typescript-eslint/camelcase
-                                    action_id: 'addATerm'
+                                    action_id: 'addATerm',
+                                    value: testTerm
                                 },
                                 {
                                     type: 'button',
