@@ -15,7 +15,7 @@ export interface ModalStatePayload {
     }
 }
 
-async function checkForExistingTerm(term: string): Promise<void> {
+export async function checkForExistingTerm(term: string): Promise<boolean> { // TODO Move this to a generic class
     const connection = await createConnection(databaseConfig);
 
     await connection.query(
@@ -24,10 +24,15 @@ async function checkForExistingTerm(term: string): Promise<void> {
     ).then(async ([rows]) => {
         connection.end();
         if ((rows as RowDataPacket)[0] > 0) {
-            return Promise.resolve();
+            return Promise.resolve(true);
         }
-        return Promise.reject();
+
+        return Promise.resolve(false);
+    }).catch(error => {
+        console.error(error);
     });
+
+    return Promise.resolve(false);
 
 }
 
@@ -86,16 +91,18 @@ export function storeDefinitionFromModal(statePayload: ModalStatePayload, teamID
         token: process.env.SLACK_BOT_TOKEN,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
-    checkForExistingTerm(term).then(() => {
-        console.log('Existing entry found');
-    }).catch(() => {
-        console.log(`Adding ${term} as ${definition}`);
-        addNewTerm(term, definition, teamID, authorID).then(() => {
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            app.client.views.open({ trigger_id: triggerID, view: successFullyAddedTermView(term, definition), token: token }).catch(error => {
-                console.error(error);
+    checkForExistingTerm(term).then((result) => {
+        if (result) {
+            console.log('Existing entry found');
+        } else {
+            console.log(`Adding ${term} as ${definition}`);
+            addNewTerm(term, definition, teamID, authorID).then(() => {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                app.client.views.open({ trigger_id: triggerID, view: successFullyAddedTermView(term, definition), token: token }).catch(error => {
+                    console.error(error);
+                });
             });
-        });
+        }
     })
 
 }

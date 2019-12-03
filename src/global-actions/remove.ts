@@ -1,7 +1,8 @@
 import { createConnection } from "mysql2/promise";
 import databaseConfig from "../config/database";
 import { App } from "@slack/bolt";
-import { confirmRemovalView, successfulRemovalView } from "../slack-views/views";
+import { confirmRemovalView, successfulRemovalView, errorModal } from "../slack-views/views";
+import { checkForExistingTerm } from "./write";
 
 export async function removeTerm(term: string): Promise<void> {
 
@@ -21,20 +22,37 @@ export async function removeTerm(term: string): Promise<void> {
     });
 }
 
-export function displayRemovalConfirmationModal(term: string, botToken: string, triggerID: string, responseURL: string): void {
+export async function displayRemovalConfirmationModal(term: string, botToken: string, triggerID: string, responseURL: string): Promise<void> {
     const app = new App({
         token: process.env.SLACK_BOT_TOKEN,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
 
+    if (await checkForExistingTerm(term)) {
+    
+        app.client.views.open({
+            token: botToken,
+            view: confirmRemovalView(term, responseURL),
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            trigger_id: triggerID
+        }).catch(error => {
+            console.error(error);
+        })
+        return;
+    }
+    console.error('Unknown term');
+
     app.client.views.open({
         token: botToken,
-        view: confirmRemovalView(term, responseURL),
+        view: errorModal(),
         // eslint-disable-next-line @typescript-eslint/camelcase
         trigger_id: triggerID
     }).catch(error => {
         console.error(error);
     })
+
+    return;
+
     
 }
 

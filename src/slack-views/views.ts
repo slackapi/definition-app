@@ -141,3 +141,18 @@ export function successfulRemovalView(term: string): ViewsPayload {
         ]
     }
 }
+
+export function errorModal(): ViewsPayload {
+    return {
+        type: "modal",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: "",
+        title: {
+            text: `Unknown error`,
+            type: "plain_text"
+        },
+        blocks: [
+            section(`Something went wrong, we're looking into it`),
+        ]
+    }
+}
