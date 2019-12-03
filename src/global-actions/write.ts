@@ -19,7 +19,7 @@ export async function checkForExistingTerm(term: string): Promise<boolean> { // 
     const connection = await createConnection(databaseConfig);
 
     return await connection.query(
-        'SELECT count(*) from definitions where term = ?',
+        'SELECT count(*) from definitions where term = ?', // TODO !!! Add a team ID filter
         [term]
     ).then(async ([rows]) => {
         connection.end();

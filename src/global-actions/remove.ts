@@ -9,9 +9,11 @@ export async function removeTerm(term: string): Promise<void> {
     const connection = await createConnection(databaseConfig);
 
     await connection.execute(
-        'DELETE from definitions where term = ?',
+        'DELETE from definitions WHERE term = ?',
         [term]
-    ).then(() => {
+    ).then((result) => {
+        console.log(term);
+        console.log(result);
         console.log('success!')
         connection.end();
         return Promise.resolve('Term Removed');

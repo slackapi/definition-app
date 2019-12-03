@@ -2,6 +2,7 @@ import { Block, PlainTextElement } from "@slack/types";
 import { globalActions, blockActions, optionValues } from "../config/actions";
 import { modalCallbacks } from "../config/views";
 import { section, divider, actionButton, actions, context, plainTextInput, sectionWithOverflow, option } from '../utils/block-builder'
+import { TermFromDatabase } from "../global-actions/read";
 
 interface MessagePayload {
     text: string,
@@ -56,8 +57,41 @@ export function definitionResultView(term: string, definition: string, authorID:
     return {
         text: `${term}`,
         blocks: [
-            sectionWithOverflow(`*${term}*\n${definition}`, [option('Remove', `${optionValues.removeTerm}-${term}`)], blockActions.termOverflowMenu),
+            sectionWithOverflow(
+                `*${term}*\n${definition}`, 
+                [
+                    option('Update', `${optionValues.updateTerm}-${term}`),
+                    option('Remove', `${optionValues.removeTerm}-${term}`)
+                ],
+                blockActions.termOverflowMenu),
             context(`*Author*: <@${authorID}> *When*: <!date^${lastUpdateTS.getTime() / 1000}^{date_pretty}|${lastUpdateTS.getTime() / 1000}>`)
+        ]
+    }
+}
+
+export function updateTermView(storedTerm: TermFromDatabase) : ViewsPayload {
+    return {
+        type: "modal",
+        submit: {
+            type: 'plain_text',
+            text: 'Update',
+            emoji: true
+        },
+        close: {
+            type: 'plain_text',
+            text: 'Cancel',
+            emoji: true
+        },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        private_metadata: JSON.stringify(storedTerm),
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.updateTermModal,
+        title: {
+            text: `Update ${storedTerm.term}`,
+            type: "plain_text"
+        },
+        blocks: [
+            plainTextInput(`Definition of ${storedTerm.term}`, 'new-definition', `The definition of ${storedTerm.term}`, true, storedTerm.definition)
         ]
     }
 }
