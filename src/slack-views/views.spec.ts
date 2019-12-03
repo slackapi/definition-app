@@ -150,15 +150,7 @@ describe('views', () => {
                             accessory: {
                                 type: "overflow",
                                 options: [
-                                    {
-                                        text: {
-                                            type: "plain_text",
-                                            text: "Update",
-                                            emoji: true
-                                        },
-                                        value: `updateTerm-${testTerm}`
-                                    },
-                                    {
+                                      {
                                         text: {
                                             type: "plain_text",
                                             text: "Remove",

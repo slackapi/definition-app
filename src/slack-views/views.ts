@@ -56,7 +56,7 @@ export function definitionResultView(term: string, definition: string, authorID:
     return {
         text: `${term}`,
         blocks: [
-            sectionWithOverflow(`*${term}*\n${definition}`, [option('Update', `${optionValues.updateTerm}-${term}`), option('Remove', `${optionValues.removeTerm}-${term}`)], blockActions.termOverflowMenu),
+            sectionWithOverflow(`*${term}*\n${definition}`, [option('Remove', `${optionValues.removeTerm}-${term}`)], blockActions.termOverflowMenu),
             context(`*Author*: <@${authorID}> *When*: <!date^${lastUpdateTS.getTime() / 1000}^{date_pretty}|${lastUpdateTS.getTime() / 1000}>`)
         ]
     }
