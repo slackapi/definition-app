@@ -1,7 +1,7 @@
 import { Block, PlainTextElement } from "@slack/types";
-import { globalActions, blockActions } from "../config/actions";
+import { globalActions, blockActions, optionValues } from "../config/actions";
 import { modalCallbacks } from "../config/views";
-import { section, divider, actionButton, actions, context, input } from '../utils/block-builder'
+import { section, divider, actionButton, actions, context, input, sectionWithOverflow, option } from '../utils/block-builder'
 
 interface MessagePayload {
     text: string,
@@ -13,7 +13,9 @@ interface ViewsPayload {
     callback_id: string,
     title: PlainTextElement,
     blocks: Block[],
-    submit?: PlainTextElement
+    submit?: PlainTextElement,
+    private_metadata?: string,
+    close?: PlainTextElement
 }
 
 export function emptyQueryView(): MessagePayload {
@@ -54,7 +56,7 @@ export function definitionResultView(term: string, definition: string, authorID:
     return {
         text: `${term}`,
         blocks: [
-            section(`*${term}*\n${definition}`),
+            sectionWithOverflow(`*${term}*\n${definition}`, [option('Remove', `${optionValues.removeTerm}-${term}`)], blockActions.termOverflowMenu),
             context(`*Author*: <@${authorID}> *When*: <!date^${lastUpdateTS.getTime() / 1000}^{date_pretty}|${lastUpdateTS.getTime() / 1000}>`)
         ]
     }
@@ -94,6 +96,63 @@ export function successFullyAddedTermView(term: string, definition: string): Vie
             section(`We've added ${term} to your company definitions`),
             divider(),
             section(`*${term}*\n${definition}`),
+        ]
+    }
+}
+
+export function confirmRemovalView(term: string, responseURL: string): ViewsPayload {
+    return {
+        type: "modal",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.confirmRemovalModal,
+        submit: {
+            type: 'plain_text',
+            text: 'Remove',
+            emoji: true
+        },
+        close: {
+            type: 'plain_text',
+            text: 'Keep',
+            emoji: true
+        },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        private_metadata: JSON.stringify({term, responseURL}),
+        title: {
+            text: `Remove term`,
+            type: "plain_text"
+        },
+        blocks: [
+            section(`Are you sure you want to remove the term _${term}_? *This cannot be undone*.`),
+        ]
+    }
+}
+
+export function successfulRemovalView(term: string): ViewsPayload {
+    return {
+        type: "modal",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.successfulTermModal,
+        title: {
+            text: `${term} removed`,
+            type: "plain_text"
+        },
+        blocks: [
+            section(`We've removed ${term} from your company definitions`),
+        ]
+    }
+}
+
+export function errorModal(): ViewsPayload {
+    return {
+        type: "modal",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: "",
+        title: {
+            text: `Unknown error`,
+            type: "plain_text"
+        },
+        blocks: [
+            section(`Something went wrong, we're looking into it`),
         ]
     }
 }

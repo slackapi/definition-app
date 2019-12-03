@@ -70,7 +70,7 @@ export function section(text: string): SectionBlock {
     }
 }
 
-export function sectionWithOverflow(text: string, options: Option[]): SectionBlock {
+export function sectionWithOverflow(text: string, options: Option[], actionID: string): SectionBlock {
     return {
         type: "section",
         text: {
@@ -79,7 +79,9 @@ export function sectionWithOverflow(text: string, options: Option[]): SectionBlo
         },
         accessory: {
             type: "overflow",
-            options
+            options,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            action_id: actionID
         }
     }
 }
