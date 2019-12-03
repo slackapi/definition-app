@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { context, section, option, sectionWithOverflow, divider, actionButton, actions, input } from './block-builder'
+import { context, section, option, sectionWithOverflow, divider, actionButton, actions, plainTextInput } from './block-builder'
 
 describe('Block builder', () => {
     describe('sections', () => {
@@ -156,7 +156,7 @@ describe('Block builder', () => {
             const testTitle = 'Test';
             const testPlaceholder = 'TestValue';
             const testBlockID = 'TestBlockID';
-            const actualValue = input(testTitle, testBlockID, testPlaceholder)
+            const actualValue = plainTextInput(testTitle, testBlockID, testPlaceholder)
             const expectedValue = {
                 type: 'input',
                 // eslint-disable-next-line @typescript-eslint/camelcase
@@ -183,7 +183,7 @@ describe('Block builder', () => {
             const testTitle = 'Test';
             const testPlaceholder = 'TestValue';
             const testBlockID = 'TestBlockID';
-            const actualValue = input(testTitle, testBlockID, testPlaceholder, true)
+            const actualValue = plainTextInput(testTitle, testBlockID, testPlaceholder, true)
             const expectedValue = {
                 type: 'input',
                 // eslint-disable-next-line @typescript-eslint/camelcase

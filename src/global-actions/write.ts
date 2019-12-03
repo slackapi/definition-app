@@ -71,7 +71,7 @@ async function addNewTerm(term: string, definition: string, teamID: string, auth
 
 }
 
-export function displayModal(botToken: string, triggerID: string): void {
+export function displayAddTermModal(botToken: string, triggerID: string, term?: string): void {
     const app = new App({
         token: process.env.SLACK_BOT_TOKEN,
         signingSecret: process.env.SLACK_SIGNING_SECRET
@@ -80,7 +80,7 @@ export function displayModal(botToken: string, triggerID: string): void {
         token: botToken,
         // eslint-disable-next-line @typescript-eslint/camelcase
         trigger_id: triggerID,
-        view: addTermModalView()
+        view: addTermModalView(term)
     }).then().catch(error => console.log(JSON.stringify(error, null, 2)));
 }
 
