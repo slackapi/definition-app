@@ -83,7 +83,7 @@ describe('views', () => {
                             type: 'section',
                             text: {
                                 type: 'mrkdwn',
-                                text: `You can use \`/${globalActions.define}\` to search for the definition of terms used by your company. What would you like to do?`
+                                text: `You can search for a term by typing \`/${globalActions.define}\` followed by the term you searching for. You can also add a new term by clicking below.`
                             }
                         },
                         {
@@ -100,16 +100,6 @@ describe('views', () => {
                                     },
                                     // eslint-disable-next-line @typescript-eslint/camelcase
                                     action_id: 'addATerm'
-                                },
-                                {
-                                    type: 'button',
-                                    text: {
-                                        type: 'plain_text',
-                                        text: 'Search for a term',
-                                        emoji: true
-                                    },
-                                    // eslint-disable-next-line @typescript-eslint/camelcase
-                                    action_id: 'searchForTerm'
                                 },
                                 {
                                     type: 'button',

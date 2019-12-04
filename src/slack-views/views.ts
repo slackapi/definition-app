@@ -25,10 +25,9 @@ export function emptyQueryView(): MessagePayload {
         blocks: [
             section(':warning: You didn\'t specify a term to search for'),
             divider(),
-            section(`You can use \`/${globalActions.define}\` to search for the definition of terms used by your company. What would you like to do?`),
+            section(`You can search for a term by typing \`/${globalActions.define}\` followed by the term you searching for. You can also add a new term by clicking below.`),
             actions([
                 actionButton('Add a term', blockActions.addATerm),
-                actionButton('Search for a term', blockActions.searchForTerm),
                 actionButton('Cancel', blockActions.clearMessage),
             ],
                 blockActions.searchOrAdd)
