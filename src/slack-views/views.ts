@@ -68,7 +68,7 @@ export function definitionResultView(term: string, definition: string, authorID:
     }
 }
 
-export function updateTermView(storedTerm: TermFromDatabase) : ViewsPayload {
+export function updateTermView(storedTerm: TermFromDatabase, responseURL: string) : ViewsPayload {
     return {
         type: "modal",
         submit: {
@@ -82,7 +82,7 @@ export function updateTermView(storedTerm: TermFromDatabase) : ViewsPayload {
             emoji: true
         },
         // eslint-disable-next-line @typescript-eslint/camelcase
-        private_metadata: JSON.stringify(storedTerm),
+        private_metadata: JSON.stringify({storedTerm, responseURL}),
         // eslint-disable-next-line @typescript-eslint/camelcase
         callback_id: modalCallbacks.updateTermModal,
         title: {
