@@ -24,13 +24,13 @@ export async function removeTerm(term: string): Promise<void> {
     });
 }
 
-export async function displayRemovalConfirmationModal(term: string, botToken: string, triggerID: string, responseURL: string, teamID: string): Promise<void> {
+export async function displayRemovalConfirmationModal(term: string, botToken: string, triggerID: string, responseURL: string): Promise<void> {
     const app = new App({
         token: process.env.SLACK_BOT_TOKEN,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
 
-    if (await checkForExistingTerm(term, teamID)) {
+    if (await checkForExistingTerm(term)) {
 
         app.client.views.open({
             token: botToken,

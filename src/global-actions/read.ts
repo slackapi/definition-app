@@ -9,15 +9,18 @@ export interface TermFromDatabase {
   authorID: string,
   updated: Date | string,
   revision: number,
-  teamID: string
 }
 
-export async function retrieveDefinition(term: string, teamID: string): Promise<TermFromDatabase> {
+export async function retrieveDefinition(term: string): Promise<TermFromDatabase> {
   const connection = await createConnection(databaseConfig);
 
+  /*
+    In a public facing (i.e. not internal) application, it would be a good practice to reference the `team_id` and/or the `enterprise_id` in this query,
+    but because this application is intended to be deployed internally, all users can access all terms, so it's not as relevant.
+  */
   return await connection.query(
-    'SELECT term, definition, revision, author_id, updated, team_id FROM definitions WHERE term = ? AND team_id = ? ORDER BY revision DESC LIMIT 1',
-    [term, teamID]
+    'SELECT term, definition, revision, author_id, updated FROM definitions WHERE term = ? ORDER BY revision DESC LIMIT 1',
+    [term]
   ).then(async ([rows]) => {
     const firstRow = (rows as RowDataPacket)[0];
     connection.end();
@@ -28,7 +31,6 @@ export async function retrieveDefinition(term: string, teamID: string): Promise<
         authorID: firstRow['author_id'],
         updated: firstRow['updated'],
         revision: firstRow['revision'],
-        teamID: firstRow['team_id']
       }
       return Promise.resolve(result);
     }
@@ -38,7 +40,6 @@ export async function retrieveDefinition(term: string, teamID: string): Promise<
       authorID: '',
       updated: '',
       revision: 0, //TODO Clean all this up
-      teamID: ''
     });
   }).catch(error => {
     connection.end();
@@ -48,14 +49,14 @@ export async function retrieveDefinition(term: string, teamID: string): Promise<
   );
 }
 
-export async function definition(term: string, teamID: string): Promise<SayArguments> {
+export async function definition(term: string): Promise<SayArguments> {
   term = term.trim();
 
   if (term.length < 1) {
     return Promise.resolve(emptyQueryView());
-  }
+}
 
-  return await retrieveDefinition(term, teamID).then(row => {
+  return await retrieveDefinition(term).then(row => {
 
     if (row.definition.length < 1) {
       return Promise.resolve(undefinedTermView(term));

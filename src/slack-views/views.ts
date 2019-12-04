@@ -63,7 +63,7 @@ export function definitionResultView(term: string, definition: string, authorID:
                     option('Remove', `${optionValues.removeTerm}-${term}`)
                 ],
                 blockActions.termOverflowMenu),
-            context(`*Author*: <@${authorID}> *When*: <!date^${lastUpdateTS.getTime() / 1000}^{date_pretty}|${lastUpdateTS.getTime() / 1000}>`)
+            context(`*Author*: <@${authorID}> *When*: <!date^${(lastUpdateTS.getTime() / 1000).toFixed(0)}^{date_pretty}|${(lastUpdateTS.getTime() / 1000).toFixed(0)}>`)
         ]
     }
 }
@@ -116,21 +116,31 @@ export function addTermModalView(term?: string): ViewsPayload {
     }
 }
 
-export function successFullyAddedTermView(term: string, definition: string): ViewsPayload {
-    return {
+export function successFullyAddedTermView(term: string, definition: string, authorID: string, lastUpdateTS: Date, update = false): ViewsPayload {
+    let title = `${term} added`;
+    let explanation = `We've added ${term} to your company definitions`;
+    
+    if (update) {
+        title = `${term} updated`;
+        explanation = `We've updated ${term} in your company definitions`;
+    } 
+    const payload : ViewsPayload = {
         type: "modal",
         // eslint-disable-next-line @typescript-eslint/camelcase
         callback_id: modalCallbacks.successfulTermModal,
         title: {
-            text: `${term} added`,
+            text: title,
             type: "plain_text"
         },
         blocks: [
-            section(`We've added ${term} to your company definitions`),
+            section(explanation),
             divider(),
             section(`*${term}*\n${definition}`),
+            context(`*Author*: <@${authorID}> *When*: <!date^${(lastUpdateTS.getTime() / 1000).toFixed(0)}^{date_pretty}|${(lastUpdateTS.getTime() / 1000).toFixed(0)}>`)
         ]
     }
+
+    return payload;
 }
 
 export function confirmRemovalView(term: string, responseURL: string): ViewsPayload {

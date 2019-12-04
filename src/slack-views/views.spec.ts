@@ -227,7 +227,6 @@ describe('views', () => {
                     authorID: '',
                     updated: '',
                     revision: 0,
-                    teamID: ''
                   }
                 const actualValue = updateTermView(testTermFromDB);
                 const expectedValue = {
@@ -284,7 +283,9 @@ describe('views', () => {
             it('returns a formatted modal', () => {
                 const testTerm = 'OKR';
                 const testDefinition = 'Objective and key results';
-                const actualValue = successFullyAddedTermView(testTerm, testDefinition);
+                const authorID = 'U1234567';
+                const lastUpdateTS = new Date('2019-12-02 12:17:10');
+                const actualValue = successFullyAddedTermView(testTerm, testDefinition, authorID, lastUpdateTS);
                 const expectedValue = {
                     type: "modal",
                     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -310,6 +311,13 @@ describe('views', () => {
                                 type: "mrkdwn",
                                 text: `*${testTerm}*\n${testDefinition}`
                             }
+                        },
+                        {
+                            type: "context",
+                            elements: [{
+                                type: "mrkdwn",
+                                text: `*Author*: <@${authorID}> *When*: <!date^${lastUpdateTS.getTime() / 1000}^{date_pretty}|${lastUpdateTS.getTime() / 1000}>`
+                            }]
                         },
 
                     ]

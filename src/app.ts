@@ -19,7 +19,7 @@ const app = new App({
 
 app.command(`/${globalActions.define}`, ({ command, ack, respond }) => {
     ack();
-    definition(command.text, command.team_id).then(result => {
+    definition(command.text).then(result => {
         respond(result)
     }).catch(response => {
         respond(response);
@@ -64,15 +64,14 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
     const actionSplit = actionValue.split('-', 2);
     switch (actionSplit[0]) {
         case optionValues.updateTerm:
-            displayUpdateTermModal(context.botToken, castBody.trigger_id, actionSplit[1], body.team.id)
+            displayUpdateTermModal(context.botToken, castBody.trigger_id, actionSplit[1])
             break;
         case optionValues.removeTerm:
             displayRemovalConfirmationModal(
                 actionSplit[1],
                 context.botToken,
                 castBody.trigger_id,
-                castBody.response_url,
-                body.team.id);
+                castBody.response_url);
             break;
         default:
             console.error(`Unknown option value: ${actionSplit[0]}`);
@@ -82,7 +81,7 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
 app.view(modalCallbacks.createModal, ({ ack, body, context }) => {
     const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
     ack();
-    storeDefinitionFromModal(body.view.state as ModalStatePayload, body.team.id, body.user.id, castBody.trigger_id, context.botToken);
+    storeDefinitionFromModal(body.view.state as ModalStatePayload, body.user.id, castBody.trigger_id, context.botToken);
 });
 
 app.view(modalCallbacks.confirmRemovalModal, ({ ack, body, context }) => {

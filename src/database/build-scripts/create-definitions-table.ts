@@ -5,7 +5,6 @@ export async function addDefinitionsTable() : Promise<void> {
     const connection = await createConnection(databaseConfig);
     const mysqlstring = `CREATE TABLE IF NOT EXISTS \`definitions\` ( 
         id INT(11) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-        team_id VARCHAR(255) NOT NULL, 
         author_id VARCHAR(255) NOT NULL,
         term VARCHAR(255) NOT NULL,
         definition VARCHAR(255) NOT NULL,
