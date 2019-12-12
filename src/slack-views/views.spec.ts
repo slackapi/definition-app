@@ -153,6 +153,14 @@ describe('views', () => {
                                     {
                                         text: {
                                             type: "plain_text",
+                                            text: "Revisions",
+                                            emoji: true
+                                        },
+                                        value: `revisionHistory-${testTerm}`
+                                    },
+                                    {
+                                        text: {
+                                            type: "plain_text",
                                             text: "Remove",
                                             emoji: true
                                         },
@@ -179,6 +187,10 @@ describe('views', () => {
         })
     })
     describe('Modals', () => {
+        describe('revisionHistoryModal', () => {
+            it('returns a formatted modal', () => {
+            })
+        });
         describe('confirmRemovalView', () => {
             it('returns a formatted modal', () => {
                 const testTerm = 'OKR';

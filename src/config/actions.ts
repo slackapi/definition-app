@@ -12,5 +12,6 @@ export const blockActions = {
 
 export const optionValues = {
     updateTerm: 'updateTerm',
-    removeTerm: 'removeTerm'
+    removeTerm: 'removeTerm',
+    revisionHistory: 'revisionHistory'
 }

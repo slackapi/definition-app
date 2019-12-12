@@ -5,7 +5,7 @@ import { App, BlockAction, OverflowAction, ButtonAction } from '@slack/bolt'
 
 import { globalActions, blockActions, optionValues } from './config/actions'
 
-import { definition } from './global-actions/read'
+import { definition, displayRevisionsModal } from './global-actions/read'
 import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
 import { modalCallbacks } from './config/views';
 import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
@@ -65,6 +65,9 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
     switch (actionSplit[0]) {
         case optionValues.updateTerm:
             displayUpdateTermModal(context.botToken, castBody.trigger_id, actionSplit[1], castBody.response_url)
+            break;
+        case optionValues.revisionHistory:
+            displayRevisionsModal(context.botToken, castBody.trigger_id, actionSplit[1])
             break;
         case optionValues.removeTerm:
             displayRemovalConfirmationModal(
