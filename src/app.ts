@@ -5,7 +5,7 @@ import { App, BlockAction, OverflowAction, ButtonAction } from '@slack/bolt'
 
 import { globalActions, blockActions, optionValues } from './config/actions'
 
-import { definition } from './global-actions/read'
+import { definition, displayRevisionsModal } from './global-actions/read'
 import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
 import { modalCallbacks } from './config/views';
 import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
@@ -64,7 +64,10 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
     const actionSplit = actionValue.split('-', 2);
     switch (actionSplit[0]) {
         case optionValues.updateTerm:
-            displayUpdateTermModal(context.botToken, castBody.trigger_id, actionSplit[1])
+            displayUpdateTermModal(context.botToken, castBody.trigger_id, actionSplit[1], castBody.response_url)
+            break;
+        case optionValues.revisionHistory:
+            displayRevisionsModal(context.botToken, castBody.trigger_id, actionSplit[1])
             break;
         case optionValues.removeTerm:
             displayRemovalConfirmationModal(
@@ -99,7 +102,7 @@ app.view(modalCallbacks.updateTermModal, ({ack, body, context}) => {
     ack();
     const metadata = JSON.parse(body.view.private_metadata);
     const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
-    updateDefinitionFromModal(metadata, body.view.state as ModalStatePayload, castBody.trigger_id, context.botToken);
+    updateDefinitionFromModal(metadata.storedTerm, body.view.state as ModalStatePayload, body.user.id, castBody.trigger_id, context.botToken, metadata.responseURL);
 });
 
 (async (): Promise<void> => {

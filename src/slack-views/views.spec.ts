@@ -153,6 +153,14 @@ describe('views', () => {
                                     {
                                         text: {
                                             type: "plain_text",
+                                            text: "Revisions",
+                                            emoji: true
+                                        },
+                                        value: `revisionHistory-${testTerm}`
+                                    },
+                                    {
+                                        text: {
+                                            type: "plain_text",
                                             text: "Remove",
                                             emoji: true
                                         },
@@ -168,7 +176,7 @@ describe('views', () => {
                             elements: [
                                 {
                                     type: "mrkdwn",
-                                    text: `*Author*: <@${testAuthorID}> *When*: <!date^${testTimestamp.getTime() / 1000}^{date_pretty}|${testTimestamp.getTime() / 1000}>`
+                                    text: `*Author*: <@${testAuthorID}> *When*: <!date^${(testTimestamp.getTime() / 1000).toFixed(0)}^{date_pretty}|${(testTimestamp.getTime() / 1000).toFixed(0)}>`
                                 }
                             ]
                         }
@@ -179,6 +187,10 @@ describe('views', () => {
         })
     })
     describe('Modals', () => {
+        describe('revisionHistoryModal', () => {
+            it('returns a formatted modal', () => {
+            })
+        });
         describe('confirmRemovalView', () => {
             it('returns a formatted modal', () => {
                 const testTerm = 'OKR';
@@ -228,7 +240,8 @@ describe('views', () => {
                     updated: '',
                     revision: 0,
                   }
-                const actualValue = updateTermView(testTermFromDB);
+                const testResponseURL = 'http://localhost';
+                const actualValue = updateTermView(testTermFromDB, testResponseURL);
                 const expectedValue = {
                     type: "modal",
                     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -249,7 +262,7 @@ describe('views', () => {
                         type: "plain_text"
                     },
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    private_metadata: JSON.stringify(testTermFromDB),
+                    private_metadata: JSON.stringify({storedTerm: testTermFromDB, responseURL: testResponseURL}),
                     blocks: [
                         {
                             type: 'input',

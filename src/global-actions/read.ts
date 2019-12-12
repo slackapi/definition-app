@@ -1,7 +1,7 @@
-import { emptyQueryView, definitionResultView, undefinedTermView } from '../slack-views/views'
+import { emptyQueryView, definitionResultView, undefinedTermView, revisionHistoryModal } from '../slack-views/views'
 import { createConnection, RowDataPacket } from "mysql2/promise";
 import databaseConfig from '../config/database';
-import { SayArguments } from '@slack/bolt';
+import { SayArguments, App } from '@slack/bolt';
 
 export interface TermFromDatabase {
   term: string,
@@ -49,6 +49,37 @@ export async function retrieveDefinition(term: string): Promise<TermFromDatabase
   );
 }
 
+export async function retrieveDefinitionRevisions(term: string): Promise<TermFromDatabase[]> {
+  const connection = await createConnection(databaseConfig);
+
+  return await connection.query(
+    'SELECT term, definition, revision, author_id, updated FROM definitions WHERE term = ? ORDER BY revision DESC LIMIT 30',
+    [term]
+  ).then(async ([rows]) => {
+    connection.end();
+    const termRows: TermFromDatabase[] = [];
+    for (const row of (rows as RowDataPacket[])) {
+      console.log(row);
+      termRows.push(
+        {
+          term: row['term'],
+          definition: row['definition'],
+          authorID: row['author_id'],
+          updated: row['updated'],
+          revision: row['revision'],
+        }
+      )
+    }
+    return Promise.resolve(termRows);
+  }).catch(error => {
+    connection.end();
+    console.error(error);
+    return Promise.reject(error);
+  }
+  );
+
+}
+
 export async function definition(term: string): Promise<SayArguments> {
   term = term.trim();
 
@@ -66,5 +97,18 @@ export async function definition(term: string): Promise<SayArguments> {
     console.error(error);
     return Promise.reject(undefinedTermView(term));
   });
+}
 
+export async function displayRevisionsModal(botToken: string, triggerID: string, term: string): Promise<void> {
+  const app = new App({
+    token: process.env.SLACK_BOT_TOKEN,
+    signingSecret: process.env.SLACK_SIGNING_SECRET
+  });
+  const revisions = await retrieveDefinitionRevisions(term);
+app.client.views.open({
+    token: botToken,
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    trigger_id: triggerID,
+    view: revisionHistoryModal(term, revisions)
+}).then().catch(error => console.log(JSON.stringify(error, null, 2)));
 }

@@ -52,23 +52,32 @@ export function undefinedTermView(term: string): MessagePayload {
     }
 }
 
-export function definitionResultView(term: string, definition: string, authorID: string, lastUpdateTS: Date): MessagePayload {
+export function definitionResultView(term: string, definition: string, authorID: string, lastUpdateTS: Date, displayOverflowMenu = true): MessagePayload {
+
+    const blocks: Block[] = [
+        context(`*Author*: <@${authorID}> *When*: <!date^${(lastUpdateTS.getTime() / 1000).toFixed(0)}^{date_pretty}|${(lastUpdateTS.getTime() / 1000).toFixed(0)}>`)
+    ]
+
+    if (displayOverflowMenu) {
+        blocks.unshift(sectionWithOverflow(
+            `*${term}*\n${definition}`,
+            [
+                option('Update', `${optionValues.updateTerm}-${term}`),
+                option('Revisions', `${optionValues.revisionHistory}-${term}`),
+                option('Remove', `${optionValues.removeTerm}-${term}`)
+            ],
+            blockActions.termOverflowMenu),
+        )
+    } else {
+        blocks.unshift(section(`*${term}*\n${definition}`))
+    }
     return {
         text: `${term}`,
-        blocks: [
-            sectionWithOverflow(
-                `*${term}*\n${definition}`, 
-                [
-                    option('Update', `${optionValues.updateTerm}-${term}`),
-                    option('Remove', `${optionValues.removeTerm}-${term}`)
-                ],
-                blockActions.termOverflowMenu),
-            context(`*Author*: <@${authorID}> *When*: <!date^${(lastUpdateTS.getTime() / 1000).toFixed(0)}^{date_pretty}|${(lastUpdateTS.getTime() / 1000).toFixed(0)}>`)
-        ]
+        blocks
     }
 }
 
-export function updateTermView(storedTerm: TermFromDatabase) : ViewsPayload {
+export function updateTermView(storedTerm: TermFromDatabase, responseURL: string): ViewsPayload {
     return {
         type: "modal",
         submit: {
@@ -82,7 +91,7 @@ export function updateTermView(storedTerm: TermFromDatabase) : ViewsPayload {
             emoji: true
         },
         // eslint-disable-next-line @typescript-eslint/camelcase
-        private_metadata: JSON.stringify(storedTerm),
+        private_metadata: JSON.stringify({ storedTerm, responseURL }),
         // eslint-disable-next-line @typescript-eslint/camelcase
         callback_id: modalCallbacks.updateTermModal,
         title: {
@@ -119,12 +128,12 @@ export function addTermModalView(term?: string): ViewsPayload {
 export function successFullyAddedTermView(term: string, definition: string, authorID: string, lastUpdateTS: Date, update = false): ViewsPayload {
     let title = `${term} added`;
     let explanation = `We've added ${term} to your company definitions`;
-    
+
     if (update) {
         title = `${term} updated`;
         explanation = `We've updated ${term} in your company definitions`;
-    } 
-    const payload : ViewsPayload = {
+    }
+    const payload: ViewsPayload = {
         type: "modal",
         // eslint-disable-next-line @typescript-eslint/camelcase
         callback_id: modalCallbacks.successfulTermModal,
@@ -159,7 +168,7 @@ export function confirmRemovalView(term: string, responseURL: string): ViewsPayl
             emoji: true
         },
         // eslint-disable-next-line @typescript-eslint/camelcase
-        private_metadata: JSON.stringify({term, responseURL}),
+        private_metadata: JSON.stringify({ term, responseURL }),
         title: {
             text: `Remove term`,
             type: "plain_text"
@@ -198,4 +207,24 @@ export function errorModal(): ViewsPayload {
             section(`Something went wrong, we're looking into it`),
         ]
     }
+}
+
+export function revisionHistoryModal(term: string, revisions: TermFromDatabase[]): ViewsPayload {
+    let revisionBlocks: Block[] = [];
+    for (const revision of revisions) {
+        revisionBlocks = revisionBlocks.concat(definitionResultView(`Revision: ${revision.revision}`, revision.definition, revision.authorID, new Date(revision.updated), false).blocks);
+        revisionBlocks.push(divider());
+    }
+    const payload: ViewsPayload = {
+        type: "modal",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: "",
+        title: {
+            text: `Revisions for ${term}`,
+            type: "plain_text"
+        },
+        blocks: revisionBlocks
+    }
+
+    return payload;
 }
