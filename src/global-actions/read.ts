@@ -2,6 +2,8 @@ import { emptyQueryView, definitionResultView, undefinedTermView, revisionHistor
 import { createConnection, RowDataPacket } from "mysql2/promise";
 import databaseConfig from '../config/database';
 import { SayArguments, App } from '@slack/bolt';
+import { Option } from '@slack/types';
+import { option } from '../utils/block-builder';
 
 export interface TermFromDatabase {
   term: string,
@@ -9,6 +11,34 @@ export interface TermFromDatabase {
   authorID: string,
   updated: Date | string,
   revision: number,
+}
+
+async function retrieveAllTermsWithValue(value: string): Promise<string[]> {
+  const connection = await createConnection(databaseConfig);
+  return await connection.query(
+    "SELECT DISTINCT term FROM definitions WHERE term LIKE" + connection.escape('%'+value+'%')
+  ).then(async ([rows]) => {
+    connection.end();
+    const terms: string[] = [];
+    for (const row of (rows as RowDataPacket[])) {
+      terms.push(row['term']);
+    }
+    return terms;
+  }).catch(error => {
+    console.error(error);
+    return Promise.reject(error);
+  });
+
+}
+
+export async function retrieveAllTermsOptions(value: string): Promise<Option[]> {
+  const terms = await retrieveAllTermsWithValue(value);
+  const options : Option[] = [];
+  for (const term of terms) {
+    options.push(option(term, term));
+  } 
+
+  return Promise.resolve(options);
 }
 
 export async function retrieveDefinition(term: string): Promise<TermFromDatabase> {

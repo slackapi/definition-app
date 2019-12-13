@@ -7,7 +7,8 @@ export const blockActions = {
     searchForTerm: 'searchForTerm',
     searchOrAdd: 'searchOrAdd',
     clearMessage: 'clearMessage',
-    termOverflowMenu: 'termOverflowMenu'
+    termOverflowMenu: 'termOverflowMenu',
+    searchTypeahead: 'searchTypeahead'
 };
 
 export const optionValues = {

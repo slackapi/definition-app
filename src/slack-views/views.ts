@@ -1,7 +1,7 @@
 import { Block, PlainTextElement } from "@slack/types";
 import { globalActions, blockActions, optionValues } from "../config/actions";
 import { modalCallbacks } from "../config/views";
-import { section, divider, actionButton, actions, context, plainTextInput, sectionWithOverflow, option } from '../utils/block-builder'
+import { section, divider, actionButton, actions, context, plainTextInput, sectionWithOverflow, option, actionSelectExternal } from '../utils/block-builder'
 import { TermFromDatabase } from "../global-actions/read";
 
 interface MessagePayload {
@@ -25,9 +25,10 @@ export function emptyQueryView(): MessagePayload {
         blocks: [
             section(':warning: You didn\'t specify a term to search for'),
             divider(),
-            section(`You can search for a term by typing \`/${globalActions.define}\` followed by the term you searching for. You can also add a new term by clicking below.`),
+            section(`You can search for a term by typing \`/${globalActions.define}\` followed by the term you searching for or using the typeahead below. You can also add a new term using the button below.`),
             actions([
                 actionButton('Add a term', blockActions.addATerm),
+                actionSelectExternal('Enter a term here', blockActions.searchTypeahead),
                 actionButton('Cancel', blockActions.clearMessage),
             ],
                 blockActions.searchOrAdd)
