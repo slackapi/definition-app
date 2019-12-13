@@ -101,7 +101,9 @@ describe('Block builder', () => {
                 placeholder : {
                     type: "plain_text",
                     text: testPlaceholder
-                }
+                },
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                min_query_length: 1
             };
             expect(actualValue).to.eql(expectedValue);
         })
