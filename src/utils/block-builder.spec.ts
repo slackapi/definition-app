@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { context, section, option, sectionWithOverflow, divider, actionButton, actions, plainTextInput } from './block-builder'
+import { context, section, option, sectionWithOverflow, divider, actionButton, actions, plainTextInput, actionSelectExternal } from './block-builder'
 
 describe('Block builder', () => {
     describe('sections', () => {
@@ -85,6 +85,25 @@ describe('Block builder', () => {
             const actualValue = divider();
             const expectedValue = {
                 type: 'divider'
+            };
+            expect(actualValue).to.eql(expectedValue);
+        })
+    })
+    describe('actionSelectExternal', () => {
+        it('returns a externally powered select block', () => {
+            const testPlaceholder = 'Placeholder';
+            const testActionID = 'action_id_123';
+            const actualValue = actionSelectExternal(testPlaceholder, testActionID);
+            const expectedValue = {
+                type: "external_select",
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                action_id: testActionID,
+                placeholder : {
+                    type: "plain_text",
+                    text: testPlaceholder
+                },
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                min_query_length: 1
             };
             expect(actualValue).to.eql(expectedValue);
         })

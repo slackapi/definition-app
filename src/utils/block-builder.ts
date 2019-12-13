@@ -1,4 +1,4 @@
-import { ContextBlock, SectionBlock, Option, DividerBlock, Action, ActionsBlock, Button, InputBlock, PlainTextInput } from '@slack/types'
+import { ContextBlock, SectionBlock, Option, DividerBlock, Action, ActionsBlock, Button, InputBlock, PlainTextInput, ExternalSelect } from '@slack/types'
 
 export function context(text: string): ContextBlock {
     return {
@@ -49,6 +49,20 @@ export function actionButton(text: string, actionID: string, style?: 'primary' |
     }
 
     return payload;
+}
+
+export function actionSelectExternal(placeholder: string, actionID: string) : ExternalSelect {
+    return {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        action_id: actionID,
+        type: "external_select",
+        placeholder: {
+            type: "plain_text",
+            text: placeholder
+        },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        min_query_length: 1
+    }
 }
 
 export function actions(actions: Action[], blockID?: string): ActionsBlock {

@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { App, BlockAction, OverflowAction, ButtonAction } from '@slack/bolt'
+import { App, BlockAction, OverflowAction, ButtonAction, StaticSelectAction } from '@slack/bolt'
 
 import { globalActions, blockActions, optionValues } from './config/actions'
 
-import { definition, displayRevisionsModal } from './global-actions/read'
+import { definition, displayRevisionsModal, retrieveAllTermsOptions } from './global-actions/read'
 import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
 import { modalCallbacks } from './config/views';
 import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
@@ -16,6 +16,26 @@ const app = new App({
     token: process.env.SLACK_BOT_TOKEN,
     signingSecret: process.env.SLACK_SIGNING_SECRET
 });
+
+// eslint-disable-next-line @typescript-eslint/camelcase
+app.options({action_id: blockActions.searchTypeahead}, async ({payload, ack}) => {
+    const options = await retrieveAllTermsOptions(payload.value);
+    // TODO The app doesn't use non-block selects anywhere, so we need to make sure the types
+    // can handle that. Until then, disable the check.
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    ack({options});
+})
+
+// eslint-disable-next-line @typescript-eslint/camelcase
+app.action({action_id: blockActions.searchTypeahead}, ({payload, ack, respond}) => {
+    ack();
+    const castPayload = payload as StaticSelectAction;
+    definition(castPayload.selected_option.value).then(result => {
+        respond(result)
+    }).catch(response => {
+        respond(response);
+    })});
 
 app.command(`/${globalActions.define}`, ({ command, ack, respond }) => {
     ack();

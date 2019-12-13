@@ -83,7 +83,7 @@ describe('views', () => {
                             type: 'section',
                             text: {
                                 type: 'mrkdwn',
-                                text: `You can search for a term by typing \`/${globalActions.define}\` followed by the term you searching for. You can also add a new term by clicking below.`
+                                text: `You can search for a term by typing \`/${globalActions.define}\` followed by the term you searching for or using the typeahead below. You can also add a new term using the button below.`
                             }
                         },
                         {
@@ -100,6 +100,17 @@ describe('views', () => {
                                     },
                                     // eslint-disable-next-line @typescript-eslint/camelcase
                                     action_id: 'addATerm'
+                                },
+                                {
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
+                                    action_id: "searchTypeahead",
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
+                                    min_query_length: 1,
+                                    placeholder : {
+                                        text: "Enter a term here",
+                                        type: "plain_text"
+                                    },
+                                    type: "external_select"
                                 },
                                 {
                                     type: 'button',
