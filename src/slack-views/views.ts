@@ -2,7 +2,7 @@ import { Block, PlainTextElement } from "@slack/types";
 import { globalActions, blockActions, optionValues } from "../config/actions";
 import { modalCallbacks } from "../config/views";
 import { section, divider, actionButton, actions, context, plainTextInput, sectionWithOverflow, option, actionSelectExternal } from '../utils/block-builder'
-import { TermFromDatabase } from "../global-actions/read";
+import { TermFromDatabase } from "../terms/read";
 
 interface MessagePayload {
     text: string,
@@ -27,8 +27,9 @@ export function emptyQueryView(): MessagePayload {
             divider(),
             section(`You can search for a term by typing \`/${globalActions.define}\` followed by the term you searching for or using the typeahead below. You can also add a new term using the button below.`),
             actions([
-                actionButton('Add a term', blockActions.addATerm),
-                actionSelectExternal('Enter a term here', blockActions.searchTypeahead),
+                actionButton('Add a new term', blockActions.addATerm),
+                actionSelectExternal('Search for terms here', blockActions.searchTypeahead),
+                actionButton('Add a new tag', blockActions.addATag),
                 actionButton('Cancel', blockActions.clearMessage),
             ],
                 blockActions.searchOrAdd)
@@ -78,6 +79,27 @@ export function definitionResultView(term: string, definition: string, authorID:
     }
 }
 
+export function addTagModalView(tag?: string): ViewsPayload {
+    return {
+        type: "modal",
+        submit: {
+            type: 'plain_text',
+            text: 'Submit',
+            emoji: true
+        },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.createTagModal,
+        title: {
+            text: "Add a new tag",
+            type: "plain_text"
+        },
+        blocks: [
+            plainTextInput('Tag', 'new-tag', 'The term you want to define', false, tag),
+        ]
+    }
+}
+
+
 export function updateTermView(storedTerm: TermFromDatabase, responseURL: string): ViewsPayload {
     return {
         type: "modal",
@@ -114,7 +136,7 @@ export function addTermModalView(term?: string): ViewsPayload {
             emoji: true
         },
         // eslint-disable-next-line @typescript-eslint/camelcase
-        callback_id: modalCallbacks.createModal,
+        callback_id: modalCallbacks.createTermModal,
         title: {
             text: "Add a new term",
             type: "plain_text"
@@ -147,6 +169,28 @@ export function successFullyAddedTermView(term: string, definition: string, auth
             divider(),
             section(`*${term}*\n${definition}`),
             context(`*Author*: <@${authorID}> *When*: <!date^${(lastUpdateTS.getTime() / 1000).toFixed(0)}^{date_pretty}|${(lastUpdateTS.getTime() / 1000).toFixed(0)}>`)
+        ]
+    }
+
+    return payload;
+}
+
+export function successFullyAddedTagView(tag: string, creatorID: string, lastUpdateTS: Date): ViewsPayload {
+    const title = `${tag} added`;
+    const explanation = `We've added ${tag} to list of your company tags`;
+
+    const payload: ViewsPayload = {
+        type: "modal",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        callback_id: modalCallbacks.successfulTermModal,
+        title: {
+            text: title,
+            type: "plain_text"
+        },
+        blocks: [
+            section(explanation),
+            divider(),
+            context(`*Creator*: <@${creatorID}> *When*: <!date^${(lastUpdateTS.getTime() / 1000).toFixed(0)}^{date_pretty}|${(lastUpdateTS.getTime() / 1000).toFixed(0)}>`)
         ]
     }
 

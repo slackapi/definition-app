@@ -6,6 +6,7 @@ export const blockActions = {
     addATerm: 'addATerm',
     searchForTerm: 'searchForTerm',
     searchOrAdd: 'searchOrAdd',
+    addATag: 'addATag',
     clearMessage: 'clearMessage',
     termOverflowMenu: 'termOverflowMenu',
     searchTypeahead: 'searchTypeahead'

@@ -5,12 +5,13 @@ import { App, BlockAction, OverflowAction, ButtonAction, StaticSelectAction } fr
 
 import { globalActions, blockActions, optionValues } from './config/actions'
 
-import { definition, displayRevisionsModal, retrieveAllTermsOptions } from './global-actions/read'
-import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
+import { definition, displayRevisionsModal, retrieveAllTermsOptions } from './terms/read'
+import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './terms/write'
 import { modalCallbacks } from './config/views';
-import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
+import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './terms/remove';
 import request from 'request';
-import { displayUpdateTermModal, updateDefinitionFromModal } from './global-actions/update';
+import { displayUpdateTermModal, updateDefinitionFromModal } from './terms/update';
+import { displayAddTagModal, storeTagDefinitionFromModal } from './tags/write';
 
 const app = new App({
     token: process.env.SLACK_BOT_TOKEN,
@@ -60,6 +61,19 @@ app.action({ action_id: blockActions.addATerm }, ({ ack, context, body, respond 
 });
 
 // eslint-disable-next-line @typescript-eslint/camelcase
+app.action({ action_id: blockActions.addATag }, ({ ack, context, body, respond }) => {
+    ack();
+    const castBody = body as unknown as BlockAction;
+    respond({
+        channel: body.channel.id,
+        text: '',
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        delete_original: true
+    });
+    displayAddTagModal(context.botToken, castBody.trigger_id, (castBody.actions[0] as ButtonAction).value)
+});
+
+// eslint-disable-next-line @typescript-eslint/camelcase
 app.action({ action_id: blockActions.searchForTerm }, ({ ack }) => {
     ack();
 });
@@ -101,7 +115,13 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
     }
 })
 
-app.view(modalCallbacks.createModal, ({ ack, body, context }) => {
+app.view(modalCallbacks.createTagModal, ({ ack, body, context }) => {
+    const castBody = body as unknown as BlockAction;
+    ack();
+    storeTagDefinitionFromModal(body.view.state as ModalStatePayload, body.user.id, castBody.trigger_id, context.botToken);
+});
+
+app.view(modalCallbacks.createTermModal, ({ ack, body, context }) => {
     const castBody = body as unknown as BlockAction;
     ack();
     storeDefinitionFromModal(body.view.state as ModalStatePayload, body.user.id, castBody.trigger_id, context.botToken);

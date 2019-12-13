@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { emptyQueryView, definitionResultView, addTermModalView, undefinedTermView, successFullyAddedTermView, confirmRemovalView, updateTermView } from './views';
 import { globalActions } from '../config/actions';
 import { modalCallbacks } from '../config/views';
-import { TermFromDatabase } from '../global-actions/read';
+import { TermFromDatabase } from '../terms/read';
 
 describe('views', () => {
     describe('Messages', () => {
