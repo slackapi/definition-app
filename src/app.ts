@@ -29,7 +29,7 @@ app.command(`/${globalActions.define}`, ({ command, ack, respond }) => {
 // eslint-disable-next-line @typescript-eslint/camelcase
 app.action({ action_id: blockActions.addATerm }, ({ ack, context, body, respond }) => {
     ack();
-    const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
+    const castBody = body as unknown as BlockAction;
     respond({
         channel: body.channel.id,
         text: '',
@@ -58,8 +58,8 @@ app.action({ action_id: blockActions.clearMessage }, ({ ack, respond, body }) =>
 // eslint-disable-next-line @typescript-eslint/camelcase
 app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, context, body }) => {
     ack();
-    const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
-    const castPayload = payload as unknown as OverflowAction; // TODO why does TypeScript not support trigger_id on body?
+    const castBody = body as unknown as BlockAction;
+    const castPayload = payload as unknown as OverflowAction; 
     const actionValue = castPayload.selected_option.value;
     const actionSplit = actionValue.split('-', 2);
     switch (actionSplit[0]) {
@@ -82,14 +82,14 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
 })
 
 app.view(modalCallbacks.createModal, ({ ack, body, context }) => {
-    const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
+    const castBody = body as unknown as BlockAction;
     ack();
     storeDefinitionFromModal(body.view.state as ModalStatePayload, body.user.id, castBody.trigger_id, context.botToken);
 });
 
 app.view(modalCallbacks.confirmRemovalModal, ({ ack, body, context }) => {
     ack();
-    const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
+    const castBody = body as unknown as BlockAction;
     const metadata = JSON.parse(body.view.private_metadata);
     removeTerm(metadata.term).then(() => {
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -101,7 +101,7 @@ app.view(modalCallbacks.confirmRemovalModal, ({ ack, body, context }) => {
 app.view(modalCallbacks.updateTermModal, ({ack, body, context}) => {
     ack();
     const metadata = JSON.parse(body.view.private_metadata);
-    const castBody = body as unknown as BlockAction; // TODO why does TypeScript not support trigger_id on body?
+    const castBody = body as unknown as BlockAction;
     updateDefinitionFromModal(metadata.storedTerm, body.view.state as ModalStatePayload, body.user.id, castBody.trigger_id, context.botToken, metadata.responseURL);
 });
 
