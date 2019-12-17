@@ -80,7 +80,7 @@ async function addNewTerm(term: string, definition: string, authorID: string): P
 
 export function displayAddTermModal(botToken: string, triggerID: string, term?: string): void {
     const app = new App({
-        token: process.env.SLACK_BOT_TOKEN,
+        token: botToken,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
     app.client.views.open({
@@ -95,7 +95,7 @@ export function storeDefinitionFromModal(statePayload: ModalStatePayload, author
     const term = statePayload.values[modalFields.newTerm][modalFields.newTerm].value;
     const definition = statePayload.values[modalFields.newDefinition][modalFields.newDefinition].value;
     const app = new App({
-        token: process.env.SLACK_BOT_TOKEN,
+        token: token,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
     checkForExistingTerm(term).then((result) => {

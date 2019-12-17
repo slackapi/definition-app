@@ -1,22 +1,58 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { App, BlockAction, OverflowAction, ButtonAction, StaticSelectAction } from '@slack/bolt'
+import express from 'express';
+import { createConnection } from 'mysql2/promise';
+import request from 'request';
 
+import { App, BlockAction, OverflowAction, ButtonAction, StaticSelectAction, AuthorizeResult, ExpressReceiver, LogLevel } from '@slack/bolt'
 import { globalActions, blockActions, optionValues } from './config/actions'
-
 import { definition, displayRevisionsModal, retrieveAllTermsOptions } from './global-actions/read'
 import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
 import { modalCallbacks } from './config/views';
 import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
-import request from 'request';
 import { displayUpdateTermModal, updateDefinitionFromModal } from './global-actions/update';
+import databaseConfig from './config/database';
+import homepageRouter from './web/homepage';
+import appInstalledRouter from './web/app_installed';
 
+
+const authorizeFn = async ({ teamId, enterpriseId } : { teamId: string, enterpriseId?: string | undefined }): Promise<AuthorizeResult> => {
+    // Fetch team info from database
+    const connection = await createConnection(databaseConfig);
+    const [rows, {}]  = await connection.query(
+      'SELECT * from tokens WHERE team_id = ? LIMIT 1',
+      [teamId, enterpriseId]
+    );
+    if (rows.length > 0) {
+      connection.end();
+      return {
+        botToken: rows[0].bot_token,
+        botUserId: rows[0].bot_user_id,
+        botId: rows[0].bot_user_id
+      }
+    }
+    throw new Error('No matching authorizations');
+  }
+
+const receiver = new ExpressReceiver({ signingSecret: process.env.SLACK_SIGNING_SECRET as string, endpoints: '/slack/events' });
+ 
 const app = new App({
-    token: process.env.SLACK_BOT_TOKEN,
-    signingSecret: process.env.SLACK_SIGNING_SECRET
+    authorize: authorizeFn,
+    receiver: receiver,
+    logLevel: LogLevel.DEBUG
 });
 
+// Express setup to handle non-bolt routings
+receiver.app.use(express.json());
+receiver.app.use(express.urlencoded({ extended: false }));
+
+// Non-bolt routes. Think landing page, install success page etc
+receiver.app.get('/', homepageRouter);
+receiver.app.get('/app_installed', appInstalledRouter);
+
+
+  
 // eslint-disable-next-line @typescript-eslint/camelcase
 app.options({action_id: blockActions.searchTypeahead}, async ({payload, ack}) => {
     const options = await retrieveAllTermsOptions(payload.value);
@@ -51,7 +87,8 @@ app.action({ action_id: blockActions.addATerm }, ({ ack, context, body, respond 
     ack();
     const castBody = body as unknown as BlockAction;
     respond({
-        channel: body.channel.id,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        channel: castBody.channel!.id,
         text: '',
         // eslint-disable-next-line @typescript-eslint/camelcase
         delete_original: true
@@ -68,7 +105,8 @@ app.action({ action_id: blockActions.searchForTerm }, ({ ack }) => {
 app.action({ action_id: blockActions.clearMessage }, ({ ack, respond, body }) => {
     ack();
     respond({
-        channel: body.channel.id,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        channel: body.channel!.id,
         text: '',
         // eslint-disable-next-line @typescript-eslint/camelcase
         delete_original: true
@@ -87,7 +125,10 @@ app.action({ action_id: blockActions.termOverflowMenu }, ({ ack, payload, contex
             displayUpdateTermModal(context.botToken, castBody.trigger_id, actionSplit[1], castBody.response_url)
             break;
         case optionValues.revisionHistory:
-            displayRevisionsModal(context.botToken, castBody.trigger_id, actionSplit[1])
+            displayRevisionsModal(context.botToken, castBody.trigger_id, actionSplit[1]).catch(
+                error => {
+                    console.log(error);  
+                } );
             break;
         case optionValues.removeTerm:
             displayRemovalConfirmationModal(

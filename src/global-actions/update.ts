@@ -10,7 +10,7 @@ import request from 'request';
 
 export async function displayUpdateTermModal(botToken: string, triggerID: string, term: string, responseURL: string): Promise<void> {
     const app = new App({
-        token: process.env.SLACK_BOT_TOKEN,
+        token: botToken,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
 
@@ -58,7 +58,7 @@ export async function updateTerm(term: string, newDefinition: string, currentRev
 export function updateDefinitionFromModal(storedTerm: TermFromDatabase, statePayload: ModalStatePayload, authorID: string, triggerID: string, token: string, responseURL: string): void {
     const definition = statePayload.values[modalFields.newDefinition][modalFields.newDefinition].value;
     const app = new App({
-        token: process.env.SLACK_BOT_TOKEN,
+        token: token,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
     checkForExistingTerm(storedTerm.term).then((result) => {
