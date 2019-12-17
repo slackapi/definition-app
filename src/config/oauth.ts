@@ -4,10 +4,8 @@ export const scopes = [
   'users:read'
 ];
 
-export const approvedWorkspaces = [
-    'T9TK3CUKW'
-]
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+export const approvedWorkspaces = process.env.APPROVED_WORKSPACES!.split(',');
 
-export const approvedEnterprises = [
-    'EP3A5959R'
-]
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+export const approvedEnterprises = process.env.APPROVED_ENTERPRISES!.split(',')

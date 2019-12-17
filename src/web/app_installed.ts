@@ -46,7 +46,6 @@ router.get('/app_installed', function (req, res) {
             const payload = authResult as SlackOAuthV2Result;
             const workspaceID = payload.team.id as string;
             const enterpriseID = payload.enterprise ? payload.enterprise.id : '';
-            console.log(`should you install? ${proceedWithInstall(workspaceID, enterpriseID)}`);
             if (proceedWithInstall(workspaceID, enterpriseID)) {
                 const connection = await createConnection(databaseConfig);
                 await connection.query(
