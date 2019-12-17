@@ -1,0 +1,26 @@
+{
+    "name": "Slack definition tool",
+    "description": "A Slack Platform tool for decoding company jargon.",
+    "keywords": [
+      "productivity",
+      "Slack",
+      "node"
+    ],
+    "repository": "https://github.com/slackapi/definition-app",
+    "success_url": "/",
+    "env": {
+      "SLACK_SIGNING_SECRET": {
+        "description": "The signing secret from your Slack App config."
+      },
+      "SLACK_CLIENT_ID": {
+        "description": "The client secret from your Slack App config."
+      },
+      "SLACK_CLIENT_SECRET": {
+        "description": "The client secret from your Slack App config."
+      }
+    },
+    "image": "heroku/nodejs",
+    "addons": [
+      "cleardb"
+    ]
+  }
