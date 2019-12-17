@@ -8,7 +8,6 @@ export async function addTokensTable() : Promise<void> {
         team_id VARCHAR(255) NOT NULL, 
         bot_token VARCHAR(255) NOT NULL, 
         installing_user VARCHAR(255) NOT NULL,
-        installing_user_token VARCHAR(255) NOT NULL,
         bot_user_id VARCHAR(255) NOT NULL,
         enterprise_id VARCHAR(255) NOT NULL,
         created DATETIME NOT NULL,

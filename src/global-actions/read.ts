@@ -16,7 +16,7 @@ export interface TermFromDatabase {
 async function retrieveAllTermsWithValue(value: string): Promise<string[]> {
   const connection = await createConnection(databaseConfig);
   return await connection.query(
-    "SELECT DISTINCT term FROM definitions WHERE term LIKE" + connection.escape('%'+value+'%')
+    "SELECT DISTINCT term FROM definitions WHERE term LIKE" + connection.escape('%' + value + '%')
   ).then(async ([rows]) => {
     connection.end();
     const terms: string[] = [];
@@ -33,10 +33,10 @@ async function retrieveAllTermsWithValue(value: string): Promise<string[]> {
 
 export async function retrieveAllTermsOptions(value: string): Promise<Option[]> {
   const terms = await retrieveAllTermsWithValue(value);
-  const options : Option[] = [];
+  const options: Option[] = [];
   for (const term of terms) {
     options.push(option(term, term));
-  } 
+  }
 
   return Promise.resolve(options);
 }
@@ -89,7 +89,6 @@ export async function retrieveDefinitionRevisions(term: string): Promise<TermFro
     connection.end();
     const termRows: TermFromDatabase[] = [];
     for (const row of (rows as RowDataPacket[])) {
-      console.log(row);
       termRows.push(
         {
           term: row['term'],
@@ -115,7 +114,7 @@ export async function definition(term: string): Promise<SayArguments> {
 
   if (term.length < 1) {
     return Promise.resolve(emptyQueryView());
-}
+  }
 
   return await retrieveDefinition(term).then(row => {
 
@@ -131,14 +130,20 @@ export async function definition(term: string): Promise<SayArguments> {
 
 export async function displayRevisionsModal(botToken: string, triggerID: string, term: string): Promise<void> {
   const app = new App({
-    token: process.env.SLACK_BOT_TOKEN,
+    token: botToken,
     signingSecret: process.env.SLACK_SIGNING_SECRET
   });
   const revisions = await retrieveDefinitionRevisions(term);
-app.client.views.open({
+  app.client.views.open({
     token: botToken,
     // eslint-disable-next-line @typescript-eslint/camelcase
     trigger_id: triggerID,
     view: revisionHistoryModal(term, revisions)
-}).then().catch(error => console.log(JSON.stringify(error, null, 2)));
+  }).then(
+    () => {
+      Promise.resolve()
+    }).catch(error => {
+      console.error(JSON.stringify(error, null, 2));
+      Promise.reject(error);
+    });
 }

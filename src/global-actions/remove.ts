@@ -26,7 +26,7 @@ export async function removeTerm(term: string): Promise<void> {
 
 export async function displayRemovalConfirmationModal(term: string, botToken: string, triggerID: string, responseURL: string): Promise<void> {
     const app = new App({
-        token: process.env.SLACK_BOT_TOKEN,
+        token: botToken,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
 
@@ -60,7 +60,7 @@ export async function displayRemovalConfirmationModal(term: string, botToken: st
 
 export function displaySuccessfulRemovalModal(term: string, botToken: string, triggerID: string): void {
     const app = new App({
-        token: process.env.SLACK_BOT_TOKEN,
+        token: botToken,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
 
