@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { context, section, option, sectionWithOverflow, divider, actionButton, actions, plainTextInput, actionSelectExternal } from './block-builder'
+import { context, section, option, sectionWithOverflow, divider, actionButton, actions, plainTextInput, actionSelectExternal, sectionWithFields, sectionWithButton, URLButton, sectionWithExternalSelect, sectionWithImage } from './block-builder'
 
 describe('Block builder', () => {
     describe('sections', () => {
@@ -42,6 +42,111 @@ describe('Block builder', () => {
                         // eslint-disable-next-line @typescript-eslint/camelcase
                         action_id: testValue
                     }
+                };
+                expect(actualValue).to.eql(expectedValue);
+            })
+        })
+        describe('sectionWithImage', () => {
+            it('returns a formatted section block containing the provided text and an image', () => {
+                const testText = 'test';
+                const testURL = 'https://api.slack.com/foo';
+                const testAltText = 'A description of the image';
+                const actualValue = sectionWithImage(testText, testURL, testAltText)
+                const expectedValue = {
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: testText
+                    },
+                    accessory: {
+                        type: "image",
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        image_url: testURL,
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        alt_text: testAltText
+                    }
+                };
+                expect(actualValue).to.eql(expectedValue);
+            })
+        })        
+        describe('sectionWithButton', () => {
+            it('returns a formatted section block containing the provided text and an overflow', () => {
+                const testText = 'test';
+                const testButtonText = 'testButton';
+                const testButtonValue = 'TestValue';
+                const testBlockID = 'blockid';
+                const actualValue = sectionWithButton(testText, actionButton(testButtonText, testBlockID, undefined, testButtonValue), testBlockID);
+                const expectedValue = {
+                    type: 'section',
+                    text: {
+                      type: 'mrkdwn',
+                      text: 'test'
+                    },
+                    accessory: {
+                      // eslint-disable-next-line @typescript-eslint/camelcase
+                      action_id: testBlockID,
+                      type: 'button',
+                      text: {
+                        type: 'plain_text',
+                        text: 'testButton',
+                        emoji: true
+                      },
+                      value: 'TestValue'
+                    },
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    block_id: testBlockID
+                };
+                expect(actualValue).to.eql(expectedValue);
+            })
+        })
+        describe('sectionWithExternalSelect', () => {
+            it('returns a formatted section block containing the provided text and an external select', () => {
+                const testText = 'test';
+                const testPlaceholder = 'Placeholder';
+                const testActionID = 'action_id_123';
+                const testBlockID = 'block_id_123';
+                const testSelectExternal = actionSelectExternal(testPlaceholder, testActionID);
+                const actualValue = sectionWithExternalSelect(testText, testSelectExternal, testBlockID);
+                const expectedValue = {
+                    type: 'section',
+                    text: {
+                      type: 'mrkdwn',
+                      text: 'test'
+                    },
+                    accessory: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        action_id: testActionID,
+                        type: 'external_select',
+                        placeholder: {
+                          type: 'plain_text',
+                          text: testPlaceholder
+                        },
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        min_query_length: 0
+                      },
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    block_id: testBlockID
+                };
+                expect(actualValue).to.eql(expectedValue);
+            })
+        })
+        describe('sectionWithFields', () => {
+            it('returns a formatted section block containing the provided fields', () => {
+                const testField1 = 'foo';
+                const testField2 = 'bar';
+                const actualValue = sectionWithFields([testField1, testField2]);
+                const expectedValue = {
+                    type: "section",
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: testField1
+                        },
+                        {
+                            type: "mrkdwn",
+                            text: testField2
+                        },
+                    ]
                 };
                 expect(actualValue).to.eql(expectedValue);
             })
@@ -103,11 +208,27 @@ describe('Block builder', () => {
                     text: testPlaceholder
                 },
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                min_query_length: 1
+                min_query_length: 0
             };
             expect(actualValue).to.eql(expectedValue);
         })
-    })
+        it('returns a externally powered select block with the initial option set', () => {
+            const testPlaceholder = 'Placeholder';
+            const testActionID = 'action_id_123';
+            const actualValue = actionSelectExternal(testPlaceholder, testActionID);
+            const expectedValue = {
+                type: "external_select",
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                action_id: testActionID,
+                placeholder : {
+                    type: "plain_text",
+                    text: testPlaceholder
+                },
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                min_query_length: 0
+            };
+            expect(actualValue).to.eql(expectedValue);
+        })    })
     describe('actionButton', () => {
         it('returns a button action block', () => {
             const testText = 'Test';
@@ -139,6 +260,26 @@ describe('Block builder', () => {
                 style: 'primary',
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 action_id: testValue
+            };
+            expect(actualValue).to.eql(expectedValue);
+        })
+    })
+    describe('URLButton', () => {
+        it('returns a URL button action block', () => {
+            const testText = 'Test';
+            const testValue = 'TestValue';
+            const testURL = 'https://api.slack.com';
+            const actualValue = URLButton(testText, testURL, testValue);
+            const expectedValue = {
+                type: 'button',
+                text: {
+                    type: 'plain_text',
+                    text: testText,
+                    emoji: true
+                },
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                action_id: testValue,
+                url: testURL
             };
             expect(actualValue).to.eql(expectedValue);
         })

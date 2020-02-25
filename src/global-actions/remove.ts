@@ -24,7 +24,7 @@ export async function removeTerm(term: string): Promise<void> {
     });
 }
 
-export async function displayRemovalConfirmationModal(term: string, botToken: string, triggerID: string, responseURL: string): Promise<void> {
+export async function displayRemovalConfirmationModal(term: string, botToken: string, triggerID: string, viewID: string): Promise<void> {
     const app = new App({
         token: botToken,
         signingSecret: process.env.SLACK_SIGNING_SECRET
@@ -32,11 +32,13 @@ export async function displayRemovalConfirmationModal(term: string, botToken: st
 
     if (await checkForExistingTerm(term)) {
 
-        app.client.views.open({
+        app.client.views.update({
             token: botToken,
-            view: confirmRemovalView(term, responseURL),
+            view: confirmRemovalView(term),
             // eslint-disable-next-line @typescript-eslint/camelcase
-            trigger_id: triggerID
+            trigger_id: triggerID,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            view_id: viewID
         }).catch(error => {
             console.error(error);
         })
@@ -44,11 +46,13 @@ export async function displayRemovalConfirmationModal(term: string, botToken: st
     }
     console.error('Unknown term');
 
-    app.client.views.open({
+    app.client.views.update({
         token: botToken,
         view: errorModal(),
         // eslint-disable-next-line @typescript-eslint/camelcase
-        trigger_id: triggerID
+        trigger_id: triggerID,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        view_id: viewID
     }).catch(error => {
         console.error(error);
     })
@@ -68,7 +72,7 @@ export function displaySuccessfulRemovalModal(term: string, botToken: string, tr
         token: botToken,
         view: successfulRemovalView(term),
         // eslint-disable-next-line @typescript-eslint/camelcase
-        trigger_id: triggerID
+        trigger_id: triggerID,
     }).catch(error => {
         console.error(error);
     })

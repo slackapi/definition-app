@@ -1,9 +1,10 @@
-import { emptyQueryView, definitionResultView, undefinedTermView, revisionHistoryModal } from '../slack-views/views'
+import { emptyQueryView, revisionHistoryModal, singleTermResultView, undefinedTermModal } from '../slack-views/views'
 import { createConnection, RowDataPacket } from "mysql2/promise";
 import databaseConfig from '../config/database';
-import { SayArguments, App } from '@slack/bolt';
+import { App } from '@slack/bolt';
 import { Option } from '@slack/types';
 import { option } from '../utils/block-builder';
+import { ViewsPayload } from '../utils/view-builder';
 
 export interface TermFromDatabase {
   term: string,
@@ -16,7 +17,7 @@ export interface TermFromDatabase {
 async function retrieveAllTermsWithValue(value: string): Promise<string[]> {
   const connection = await createConnection(databaseConfig);
   return await connection.query(
-    "SELECT DISTINCT term FROM definitions WHERE term LIKE" + connection.escape('%' + value + '%')
+    "SELECT DISTINCT term FROM definitions WHERE term LIKE" + connection.escape('%' + value + '%') + " LIMIT 99"
   ).then(async ([rows]) => {
     connection.end();
     const terms: string[] = [];
@@ -109,36 +110,39 @@ export async function retrieveDefinitionRevisions(term: string): Promise<TermFro
 
 }
 
-export async function definition(term: string): Promise<SayArguments> {
-  term = term.trim();
-
+export async function definition(term: string): Promise<ViewsPayload> {
+  
   if (term.length < 1) {
     return Promise.resolve(emptyQueryView());
   }
+  
+  term = term.trim();
 
   return await retrieveDefinition(term).then(row => {
 
     if (row.definition.length < 1) {
-      return Promise.resolve(undefinedTermView(term));
+      return Promise.resolve(undefinedTermModal(term));
     }
-    return Promise.resolve(definitionResultView(row.term, row.definition, row.authorID, row.updated as Date))
+    return Promise.resolve(singleTermResultView(row.term, row.definition, row.authorID, row.updated as Date))
   }).catch(error => {
     console.error(error);
-    return Promise.reject(undefinedTermView(term));
+    return Promise.reject(undefinedTermModal(term));
   });
 }
 
-export async function displayRevisionsModal(botToken: string, triggerID: string, term: string): Promise<void> {
+export async function displayRevisionsModal(botToken: string, triggerID: string, term: string, viewID: string): Promise<void> {
   const app = new App({
     token: botToken,
     signingSecret: process.env.SLACK_SIGNING_SECRET
   });
   const revisions = await retrieveDefinitionRevisions(term);
-  app.client.views.open({
+  app.client.views.update({
     token: botToken,
     // eslint-disable-next-line @typescript-eslint/camelcase
     trigger_id: triggerID,
-    view: revisionHistoryModal(term, revisions)
+    view: revisionHistoryModal(term, revisions),
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    view_id: viewID
   }).then(
     () => {
       Promise.resolve()
@@ -146,4 +150,61 @@ export async function displayRevisionsModal(botToken: string, triggerID: string,
       console.error(JSON.stringify(error, null, 2));
       Promise.reject(error);
     });
+}
+
+export async function displaySearchModal(botToken: string, triggerID: string): Promise<void> {
+  const app = new App({
+    token: botToken,
+    signingSecret: process.env.SLACK_SIGNING_SECRET
+  });
+  app.client.views.open({
+    token: botToken,
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    trigger_id: triggerID,
+    view: emptyQueryView()
+  }).then(
+    () => {
+      Promise.resolve()
+    }).catch(error => {
+      console.error(JSON.stringify(error, null, 2));
+      Promise.reject(error);
+    });
+}
+
+export async function displayResultModal(botToken: string, triggerID: string, term: string, viewID?: string): Promise<void> {
+  const app = new App({
+    token: botToken,
+    signingSecret: process.env.SLACK_SIGNING_SECRET
+  });
+  const result = await retrieveDefinition(term);
+  const view = result.definition.length > 0 ? singleTermResultView(result.term, result.definition, result.authorID, result.updated as Date) : undefinedTermModal(term)
+  if (viewID) {
+    app.client.views.update({
+      token: botToken,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      trigger_id: triggerID,
+      view,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      view_id: viewID
+    }).then(
+      () => {
+        Promise.resolve()
+      }).catch(error => {
+        console.error(JSON.stringify(error, null, 2));
+        Promise.reject(error);
+      });
+  } else {
+    app.client.views.open({
+      token: botToken,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      trigger_id: triggerID,
+      view
+    }).then(
+      () => {
+        Promise.resolve()
+      }).catch(error => {
+        console.error(JSON.stringify(error, null, 2));
+        Promise.reject(error);
+      });
+  }
 }

@@ -9,11 +9,15 @@ export interface ModalStatePayload {
         [key: string]: {
             [key: string]: {
                 type: string,
-                value: string
+                value?: string,
+                selected_option?: {
+                    value: string
+                }
             }
         }
     }
 }
+
 
 export interface TermObject {
     term: string,
@@ -78,22 +82,24 @@ async function addNewTerm(term: string, definition: string, authorID: string): P
 
 }
 
-export function displayAddTermModal(botToken: string, triggerID: string, term?: string): void {
+export function displayAddTermModal(botToken: string, triggerID: string, viewID: string, term?: string): void {
     const app = new App({
         token: botToken,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
-    app.client.views.open({
+    app.client.views.update({
         token: botToken,
         // eslint-disable-next-line @typescript-eslint/camelcase
         trigger_id: triggerID,
-        view: addTermModalView(term)
+        view: addTermModalView(term),
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        view_id: viewID
     }).then().catch(error => console.log(JSON.stringify(error, null, 2)));
 }
 
 export function storeDefinitionFromModal(statePayload: ModalStatePayload, authorID: string, triggerID: string, token: string): void {
-    const term = statePayload.values[modalFields.newTerm][modalFields.newTerm].value;
-    const definition = statePayload.values[modalFields.newDefinition][modalFields.newDefinition].value;
+    const term = statePayload.values[modalFields.newTerm][modalFields.newTerm].value || '';
+    const definition = statePayload.values[modalFields.newDefinition][modalFields.newDefinition].value || '';
     const app = new App({
         token: token,
         signingSecret: process.env.SLACK_SIGNING_SECRET

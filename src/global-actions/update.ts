@@ -1,25 +1,25 @@
 import { App } from "@slack/bolt";
-import { updateTermView, successFullyAddedTermView, definitionResultView } from "../slack-views/views";
+import { updateTermView, successFullyAddedTermView } from "../slack-views/views";
 import { retrieveDefinition, TermFromDatabase } from "./read";
 import { createConnection } from "mysql2/promise";
 import databaseConfig from "../config/database";
 import { ModalStatePayload, checkForExistingTerm, TermObject } from "./write";
 import { modalFields } from "../config/views";
-import request from 'request';
 
-
-export async function displayUpdateTermModal(botToken: string, triggerID: string, term: string, responseURL: string): Promise<void> {
+export async function displayUpdateTermModal(botToken: string, triggerID: string, term: string, viewID: string): Promise<void> {
     const app = new App({
         token: botToken,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
 
     const storedTerm = await retrieveDefinition(term)
-    app.client.views.open({
+    app.client.views.update({
         token: botToken,
         // eslint-disable-next-line @typescript-eslint/camelcase
         trigger_id: triggerID,
-        view: updateTermView(storedTerm, responseURL)
+        view: updateTermView(storedTerm),
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        view_id: viewID
     }).then().catch(error => console.log(JSON.stringify(error, null, 2)));
 }
 
@@ -55,31 +55,16 @@ export async function updateTerm(term: string, newDefinition: string, currentRev
     });
 }
 
-export function updateDefinitionFromModal(storedTerm: TermFromDatabase, statePayload: ModalStatePayload, authorID: string, triggerID: string, token: string, responseURL: string): void {
-    const definition = statePayload.values[modalFields.newDefinition][modalFields.newDefinition].value;
+export function updateDefinitionFromModal(storedTerm: TermFromDatabase, statePayload: ModalStatePayload, authorID: string, triggerID: string, token: string): void {
+    const definition = statePayload.values[modalFields.newDefinition][modalFields.newDefinition].value || '';
     const app = new App({
         token: token,
         signingSecret: process.env.SLACK_SIGNING_SECRET
     });
     checkForExistingTerm(storedTerm.term).then((result) => {
         if (result) {
-            updateTerm(storedTerm.term, definition, storedTerm.revision, authorID).then((newTermObject) => {
+            updateTerm(storedTerm.term, definition, storedTerm.revision, authorID).then((newTermObject: { term: string; definition: string; authorID: string; updated: string | number | Date; }) => {
                 console.log(newTermObject);
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                const view = definitionResultView(newTermObject.term, newTermObject.definition, newTermObject.authorID, new Date(newTermObject.updated));
-                request.post(responseURL,
-                    {
-                        json: 
-                            {
-                                // eslint-disable-next-line @typescript-eslint/camelcase
-                                replace_original: true,
-                                blocks: view.blocks,
-                                text: view.text
-                            }
-                        
-
-                    }
-                )
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 app.client.views.open({ trigger_id: triggerID, view: successFullyAddedTermView(newTermObject.term, newTermObject.definition, newTermObject.authorID, new Date(newTermObject.updated), true), token: token }).catch(error => {
                     console.error(error);
