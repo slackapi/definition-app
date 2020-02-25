@@ -1,14 +1,9 @@
-import { Block, PlainTextElement } from "@slack/types";
-import { globalActions, blockActions, optionValues } from "../config/actions";
-import { modalCallbacks } from "../config/views";
-import { section, divider, actionButton, actions, context, plainTextInput, sectionWithOverflow, option, actionSelectExternal } from '../utils/block-builder'
+import { Block, PlainTextElement, KnownBlock } from "@slack/types";
+import { blockActions, optionValues } from "../config/actions";
+import { modalCallbacks, modalFields } from "../config/views";
+import { section, divider, actionButton, actions, context, plainTextInput, sectionWithOverflow, option, inputSelectExternal, sectionWithButton } from '../utils/block-builder'
 import { TermFromDatabase } from "../global-actions/read";
 import { buildModal } from "../utils/view-builder";
-
-interface MessagePayload {
-    text: string,
-    blocks: Block[]
-}
 
 interface ViewsPayload {
     type: "modal",
@@ -20,66 +15,41 @@ interface ViewsPayload {
     close?: PlainTextElement
 }
 
-export function emptyQueryView(): MessagePayload {
-    return {
-        text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
-        blocks: [
-            section(':warning: You didn\'t specify a term to search for'),
+export function emptyQueryView(): ViewsPayload {
+    return buildModal(
+        `Search for a definition`,
+        [
+            inputSelectExternal("Term", "Enter a term, like ARR", modalFields.searchTerm),
             divider(),
-            section(`You can search for a term by typing \`/${globalActions.define}\` followed by the term you searching for or using the typeahead below. You can also add a new term using the button below.`),
-            actions([
-                actionButton('Add a term', blockActions.addATerm),
-                actionSelectExternal('Enter a term here', blockActions.searchTypeahead),
-                actionButton('Cancel', blockActions.clearMessage),
-            ],
-                blockActions.searchOrAdd)
-        ]
-    }
+            sectionWithButton(
+                `Can't find what you're looking for?`, 
+                actionButton('Add definition', blockActions.addATerm, undefined),
+                blockActions.addATerm
+                ),
+
+        ],
+        modalCallbacks.searchForTerm,
+        `Search`
+    )
 }
 
-export function undefinedTermView(term: string): MessagePayload {
-    return {
-        text: `There is currently no definition for the term ${term}`,
-        blocks: [
-            section(`:question: There is currently no definition for the term ${term}`),
+export function undefinedTermModal(term: string): ViewsPayload {
+    return buildModal(
+        `No definition found`,
+        [
+            section(`:question: There is currently no definition for the term *${term}*`),
             divider(),
-            section(`Would you like to add one?`),
             actions(
                 [
-                    actionButton('Yes', blockActions.addATerm, undefined, term),
-                    actionButton('No', blockActions.clearMessage),
+                    actionButton('Click here to add one', blockActions.addATerm, undefined, term)
                 ],
             )
-        ]
-    }
+        ],
+        'ff'
+    )
 }
 
-export function definitionResultView(term: string, definition: string, authorID: string, lastUpdateTS: Date, displayOverflowMenu = true): MessagePayload {
-
-    const blocks: Block[] = [
-        context(`*Author*: <@${authorID}> *When*: <!date^${(lastUpdateTS.getTime() / 1000).toFixed(0)}^{date_pretty}|${(lastUpdateTS.getTime() / 1000).toFixed(0)}>`)
-    ]
-
-    if (displayOverflowMenu) {
-        blocks.unshift(sectionWithOverflow(
-            `*${term}*\n${definition}`,
-            [
-                option('Update', `${optionValues.updateTerm}-${term}`),
-                option('Revisions', `${optionValues.revisionHistory}-${term}`),
-                option('Remove', `${optionValues.removeTerm}-${term}`)
-            ],
-            blockActions.termOverflowMenu),
-        )
-    } else {
-        blocks.unshift(section(`*${term}*\n${definition}`))
-    }
-    return {
-        text: `${term}`,
-        blocks
-    }
-}
-
-export function updateTermView(storedTerm: TermFromDatabase, responseURL: string): ViewsPayload {
+export function updateTermView(storedTerm: TermFromDatabase): ViewsPayload {
     return buildModal(
         `Update ${storedTerm.term}`,
         [
@@ -88,7 +58,7 @@ export function updateTermView(storedTerm: TermFromDatabase, responseURL: string
         modalCallbacks.updateTermModal,
         "Update",
         "Cancel",
-        {storedTerm, responseURL}
+        {storedTerm}
     )
 }
 
@@ -120,14 +90,32 @@ export function successFullyAddedTermView(term: string, definition: string, auth
     );
 }
 
-export function confirmRemovalView(term: string, responseURL: string): ViewsPayload {
+export function singleTermResultView(term: string, definition: string, authorID: string, lastUpdateTS: Date): ViewsPayload {
+    return buildModal(
+        term,
+        [
+            sectionWithOverflow(
+                definition,
+                [
+                    option('Update', `${optionValues.updateTerm}-${term}`),
+                    option('Revisions', `${optionValues.revisionHistory}-${term}`),
+                    option('Remove', `${optionValues.removeTerm}-${term}`)
+                ],
+                blockActions.termOverflowMenu),
+            context(`*Author*: <@${authorID}> *When*: <!date^${(lastUpdateTS.getTime() / 1000).toFixed(0)}^{date_pretty}|${(lastUpdateTS.getTime() / 1000).toFixed(0)}>`),
+        ],
+        modalCallbacks.termDisplayModal
+    );
+};
+
+export function confirmRemovalView(term: string): ViewsPayload {
     return buildModal(
         'Remove term',
         [section(`Are you sure you want to remove the term _${term}_? *This cannot be undone*.`)],
         modalCallbacks.confirmRemovalModal,
         'Remove',
         'Keep',
-        {term, responseURL},
+        {term},
     )
 }
 
@@ -146,12 +134,20 @@ export function errorModal(): ViewsPayload {
         "");
 }
 
+function revisionViewBlock(title: string, definition: string, authorID: string, lastUpdateTS: Date): KnownBlock[] {
+    return [
+        section(title),
+        section(definition),
+        context(`*Author*: <@${authorID}> *When*: <!date^${(lastUpdateTS.getTime() / 1000).toFixed(0)}^{date_pretty}|${(lastUpdateTS.getTime() / 1000).toFixed(0)}>`),
+    ]
+} 
+
 export function revisionHistoryModal(term: string, revisions: TermFromDatabase[]): ViewsPayload {
     let revisionBlocks: Block[] = [];
     revisionBlocks.push(section(`Revisions for _${term}_`));
     revisionBlocks.push(divider());
     for (const revision of revisions) {
-        revisionBlocks = revisionBlocks.concat(definitionResultView(`Revision: ${revision.revision}`, revision.definition, revision.authorID, new Date(revision.updated), false).blocks);
+        revisionBlocks = revisionBlocks.concat(revisionViewBlock(`Revision: ${revision.revision}`, `${revision.definition}`, revision.authorID, new Date(revision.updated)));
         revisionBlocks.push(divider());
     }
 

@@ -1,203 +1,78 @@
 import 'mocha'
 import { expect } from 'chai'
-import { emptyQueryView, definitionResultView, addTermModalView, undefinedTermView, successFullyAddedTermView, confirmRemovalView, updateTermView } from './views';
-import { globalActions } from '../config/actions';
+import { emptyQueryView, addTermModalView, successFullyAddedTermView, confirmRemovalView, updateTermView } from './views';
 import { modalCallbacks } from '../config/views';
 import { TermFromDatabase } from '../global-actions/read';
 
 describe('views', () => {
-    describe('Messages', () => {
-        describe('undefinedTermView', () => {
-            it('returns a formatted message block', () => {
-                const testTerm = 'OKR';
-                const actualValue = undefinedTermView(testTerm);
-                const expectedValue = {
-                    text: `There is currently no definition for the term ${testTerm}`,
-                    blocks: [
-                        {
-                            type: 'section',
-                            text: {
-                                type: 'mrkdwn',
-                                text: `:question: There is currently no definition for the term ${testTerm}`
-                            }
-                        },
-                        {
-                            type: 'divider'
-                        },
-                        {
-                            type: 'section',
-                            text: {
-                                type: 'mrkdwn',
-                                text: `Would you like to add one?`
-                            }
-                        },
-                        {
-                            type: 'actions',
-                            // eslint-disable-next-line @typescript-eslint/camelcase
-                            elements: [
-                                {
-                                    type: 'button',
-                                    text: {
-                                        type: 'plain_text',
-                                        text: 'Yes',
-                                        emoji: true
-                                    },
-                                    // eslint-disable-next-line @typescript-eslint/camelcase
-                                    action_id: 'addATerm',
-                                    value: testTerm
-                                },
-                                {
-                                    type: 'button',
-                                    text: {
-                                        type: 'plain_text',
-                                        text: 'No',
-                                        emoji: true
-                                    },
-                                    // eslint-disable-next-line @typescript-eslint/camelcase
-                                    action_id: 'clearMessage'
-                                }
-                            ]
-                        }
-                    ]
-                }
-                expect(actualValue).to.eql(expectedValue);
-            })
-        });
+    describe('Modals', () => {
         describe('emptyQueryView', () => {
             it('returns a formatted message block', () => {
                 const actualValue = emptyQueryView();
                 const expectedValue = {
-                    text: `Please provide a search term, for example - \`/${globalActions.define} OKR\``,
+                    type: "modal",
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    callback_id: "searchForTermModal",
+                    submit: {
+                        type: 'plain_text',
+                        text: 'Search',
+                        emoji: true
+                    },
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    title: {
+                        text: `Search for a definition`,
+                        type: "plain_text"
+                    },
                     blocks: [
                         {
-                            type: 'section',
-                            text: {
-                                type: 'mrkdwn',
-                                text: ':warning: You didn\'t specify a term to search for'
-                            }
-                        },
-                        {
-                            type: 'divider'
-                        },
-                        {
-                            type: 'section',
-                            text: {
-                                type: 'mrkdwn',
-                                text: `You can search for a term by typing \`/${globalActions.define}\` followed by the term you searching for or using the typeahead below. You can also add a new term using the button below.`
-                            }
-                        },
-                        {
-                            type: 'actions',
+                            type: 'input',
                             // eslint-disable-next-line @typescript-eslint/camelcase
-                            block_id: 'searchOrAdd',
-                            elements: [
-                                {
-                                    type: 'button',
-                                    text: {
-                                        type: 'plain_text',
-                                        text: 'Add a term',
-                                        emoji: true
-                                    },
-                                    // eslint-disable-next-line @typescript-eslint/camelcase
-                                    action_id: 'addATerm'
+                            block_id: 'search-term',
+                            element: {
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                type: "external_select",
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'search-term',
+                                placeholder: {
+                                    type: "plain_text",
+                                    text: "Enter a term, like ARR"
                                 },
-                                {
-                                    // eslint-disable-next-line @typescript-eslint/camelcase
-                                    action_id: "searchTypeahead",
-                                    // eslint-disable-next-line @typescript-eslint/camelcase
-                                    min_query_length: 1,
-                                    placeholder : {
-                                        text: "Enter a term here",
-                                        type: "plain_text"
-                                    },
-                                    type: "external_select"
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                min_query_length: 0
+                            },
+                            label: {
+                                type: 'plain_text',
+                                text: "Term",
+                                emoji: true
+                            }
+                        },
+                        {
+                            type: "divider"
+                        },
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: `Can't find what you're looking for?`,
+                            },
+                            accessory: {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: 'Add definition',
+                                    emoji: true
                                 },
-                                {
-                                    type: 'button',
-                                    text: {
-                                        type: 'plain_text',
-                                        text: 'Cancel',
-                                        emoji: true
-                                    },
-                                    // eslint-disable-next-line @typescript-eslint/camelcase
-                                    action_id: 'clearMessage'
-                                }
-                            ]
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                action_id: 'addATerm'
+                            },
+                            // eslint-disable-next-line @typescript-eslint/camelcase
+                            block_id: 'addATerm'
                         }
                     ]
                 }
                 expect(actualValue).to.eql(expectedValue);
             })
         })
-        describe('definitionResultView', () => {
-            it('returns a formatted message block', () => {
-                const testTerm = 'OKR';
-                const testDefinition = 'OKRs are objective and key results';
-                const testAuthorID = 'U1234567';
-                const testTimestamp = new Date();
-                const actualValue = definitionResultView(
-                    testTerm,
-                    testDefinition,
-                    testAuthorID,
-                    testTimestamp
-                );
-                const expectedValue = {
-                    text: `${testTerm}`,
-                    blocks: [
-                        {
-                            type: "section",
-                            text: {
-                                type: "mrkdwn",
-                                text: `*${testTerm}*\n${testDefinition}`
-                            },
-                            accessory: {
-                                type: "overflow",
-                                options: [
-                                    {
-                                        text: {
-                                            type: "plain_text",
-                                            text: "Update",
-                                            emoji: true
-                                        },
-                                        value: `updateTerm-${testTerm}`
-                                    },
-                                    {
-                                        text: {
-                                            type: "plain_text",
-                                            text: "Revisions",
-                                            emoji: true
-                                        },
-                                        value: `revisionHistory-${testTerm}`
-                                    },
-                                    {
-                                        text: {
-                                            type: "plain_text",
-                                            text: "Remove",
-                                            emoji: true
-                                        },
-                                        value: `removeTerm-${testTerm}`
-                                    },
-                                ],
-                                // eslint-disable-next-line @typescript-eslint/camelcase
-                                action_id: 'termOverflowMenu'
-                            }
-                        },
-                        {
-                            type: "context",
-                            elements: [
-                                {
-                                    type: "mrkdwn",
-                                    text: `*Author*: <@${testAuthorID}> *When*: <!date^${(testTimestamp.getTime() / 1000).toFixed(0)}^{date_pretty}|${(testTimestamp.getTime() / 1000).toFixed(0)}>`
-                                }
-                            ]
-                        }
-                    ]
-                };
-                expect(actualValue).to.eql(expectedValue);
-            })
-        })
-    })
-    describe('Modals', () => {
         describe('revisionHistoryModal', () => {
             it('returns a formatted modal', () => {
             })
@@ -205,8 +80,7 @@ describe('views', () => {
         describe('confirmRemovalView', () => {
             it('returns a formatted modal', () => {
                 const testTerm = 'OKR';
-                const testResponseURL = 'https://localhost/'
-                const actualValue = confirmRemovalView(testTerm, testResponseURL);
+                const actualValue = confirmRemovalView(testTerm);
                 const expectedValue = {
                     type: "modal",
                     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -222,7 +96,7 @@ describe('views', () => {
                         emoji: true
                     },
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    private_metadata: JSON.stringify({term: testTerm, responseURL: testResponseURL}),
+                    private_metadata: JSON.stringify({term: testTerm}),
                     title: {
                         text: `Remove term`,
                         type: "plain_text"
@@ -251,8 +125,7 @@ describe('views', () => {
                     updated: '',
                     revision: 0,
                   }
-                const testResponseURL = 'http://localhost';
-                const actualValue = updateTermView(testTermFromDB, testResponseURL);
+                const actualValue = updateTermView(testTermFromDB);
                 const expectedValue = {
                     type: "modal",
                     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -273,7 +146,7 @@ describe('views', () => {
                         type: "plain_text"
                     },
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    private_metadata: JSON.stringify({storedTerm: testTermFromDB, responseURL: testResponseURL}),
+                    private_metadata: JSON.stringify({storedTerm: testTermFromDB}),
                     blocks: [
                         {
                             type: 'input',
