@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/slackapi/definition-app#readme",
   "dependencies": {
-    "@slack/bolt": "^1.6.0",
+    "@slack/bolt": "^1.8.0",
     "@types/request": "^2.48.3",
     "dotenv": "^8.2.0",
     "mysql2": "^2.0.1",
