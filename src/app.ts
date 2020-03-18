@@ -16,26 +16,26 @@ import homepageRouter from './web/homepage';
 import appInstalledRouter from './web/app_installed';
 
 
-const authorizeFn = async ({ teamId, enterpriseId } : { teamId: string, enterpriseId?: string | undefined }): Promise<AuthorizeResult> => {
+const authorizeFn = async ({ teamId, enterpriseId }: { teamId: string, enterpriseId?: string | undefined }): Promise<AuthorizeResult> => {
     // Fetch team info from database
     const connection = await createConnection(databaseConfig);
-    const [rows, {}]  = await connection.query(
-      'SELECT * from tokens WHERE team_id = ? LIMIT 1',
-      [teamId, enterpriseId]
+    const [rows, { }] = await connection.query(
+        'SELECT * from tokens WHERE team_id = ? LIMIT 1',
+        [teamId, enterpriseId]
     );
     if (rows.length > 0) {
-      connection.end();
-      return {
-        botToken: rows[0].bot_token,
-        botUserId: rows[0].bot_user_id,
-        botId: rows[0].bot_user_id
-      }
+        connection.end();
+        return {
+            botToken: rows[0].bot_token,
+            botUserId: rows[0].bot_user_id,
+            botId: rows[0].bot_user_id
+        }
     }
     throw new Error('No matching authorizations');
-  }
+}
 
 const receiver = new ExpressReceiver({ signingSecret: process.env.SLACK_SIGNING_SECRET as string, endpoints: '/slack/events' });
- 
+
 const app = new App({
     authorize: authorizeFn,
     receiver: receiver,
@@ -50,16 +50,20 @@ receiver.app.use(express.urlencoded({ extended: false }));
 receiver.app.get('/', homepageRouter);
 receiver.app.get('/app_installed', appInstalledRouter);
 
-
-  
 // eslint-disable-next-line @typescript-eslint/camelcase
-app.options({block_id: modalFields.searchTerm}, async ({payload, ack}) => {
+app.shortcut({ callback_id: 'shortcuts_phrase_search' }, async ({ ack, context, body }) => {
+    ack();
+    await displaySearchModal(context.botToken, body.trigger_id);
+});
+
+// eslint-disable-next-line @typescript-eslint/camelcase
+app.options({ block_id: modalFields.searchTerm }, async ({ payload, ack }) => {
     const options = await retrieveAllTermsOptions(payload.value);
     // TODO The app doesn't use non-block selects anywhere, so we need to make sure the types
     // can handle that. Until then, disable the check.
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    ack({options});
+    ack({ options });
 })
 
 // eslint-disable-next-line @typescript-eslint/camelcase
@@ -70,22 +74,22 @@ app.view({ callback_id: modalCallbacks.searchForTerm }, async ({ ack, view, body
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const term = state.values[modalFields.searchTerm][modalFields.searchTerm].selected_option;
     if (term && body.view) {
-      await displayResultModal(context.botToken, castBody.trigger_id, term.value);
-      // TODO Can we efficiently do this with views.update?
+        await displayResultModal(context.botToken, castBody.trigger_id, term.value);
+        // TODO Can we efficiently do this with views.update?
     }
 
     return;
 });
-  
+
 // eslint-disable-next-line @typescript-eslint/camelcase
-app.action({type: 'block_actions', action_id: blockActions.searchTypeahead}, async ({ack, context, body}) => {
+app.action({ type: 'block_actions', action_id: blockActions.searchTypeahead }, async ({ ack, context, body }) => {
     ack();
     const option = body.actions[0] as ExternalSelectAction;
     if (option.selected_option && option.selected_option.value && body.view) {
-      const requestedTerm = option.selected_option.value || '';
-      await displayResultModal(context.botToken, body.trigger_id, requestedTerm, (body.view as unknown as ViewOutput).id);
+        const requestedTerm = option.selected_option.value || '';
+        await displayResultModal(context.botToken, body.trigger_id, requestedTerm, (body.view as unknown as ViewOutput).id);
     }
-      
+
 });
 
 app.command(`/${globalActions.define}`, async ({ command, ack, context }) => {
@@ -130,7 +134,7 @@ app.action({ action_id: blockActions.clearMessage }, ({ ack, respond, body }) =>
 // eslint-disable-next-line @typescript-eslint/camelcase
 app.action({ type: 'block_actions', action_id: blockActions.termOverflowMenu }, ({ ack, payload, context, body }) => {
     ack();
-    const castPayload = payload as unknown as OverflowAction; 
+    const castPayload = payload as unknown as OverflowAction;
     const actionValue = castPayload.selected_option.value;
     const actionSplit = actionValue.split('-', 2);
     const viewID = (body.view as unknown as ViewOutput).id;
@@ -141,8 +145,8 @@ app.action({ type: 'block_actions', action_id: blockActions.termOverflowMenu }, 
         case optionValues.revisionHistory:
             displayRevisionsModal(context.botToken, body.trigger_id, actionSplit[1], viewID).catch(
                 error => {
-                    console.log(error);  
-                } );
+                    console.log(error);
+                });
             break;
         case optionValues.removeTerm:
             displayRemovalConfirmationModal(
@@ -172,7 +176,7 @@ app.view(modalCallbacks.confirmRemovalModal, ({ ack, body, context }) => {
     });
 });
 
-app.view(modalCallbacks.updateTermModal, ({ack, body, context}) => {
+app.view(modalCallbacks.updateTermModal, ({ ack, body, context }) => {
     ack();
     const metadata = JSON.parse(body.view.private_metadata);
     const castBody = body as unknown as BlockAction;
