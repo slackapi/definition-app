@@ -39,7 +39,6 @@ const receiver = new ExpressReceiver({ signingSecret: process.env.SLACK_SIGNING_
 const app = new App({
     authorize: authorizeFn,
     receiver: receiver,
-    logLevel: LogLevel.DEBUG
 });
 
 // Express setup to handle non-bolt routings
