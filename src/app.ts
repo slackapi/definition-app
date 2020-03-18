@@ -4,7 +4,7 @@ dotenv.config();
 import express from 'express';
 import { createConnection } from 'mysql2/promise';
 
-import { App, BlockAction, OverflowAction, ButtonAction, AuthorizeResult, ExpressReceiver, LogLevel, ExternalSelectAction, ViewOutput } from '@slack/bolt'
+import { App, BlockAction, OverflowAction, ButtonAction, AuthorizeResult, ExpressReceiver, ExternalSelectAction, ViewOutput } from '@slack/bolt'
 import { globalActions, blockActions, optionValues } from './config/actions'
 import { displayRevisionsModal, retrieveAllTermsOptions, displayResultModal, displaySearchModal } from './global-actions/read'
 import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
