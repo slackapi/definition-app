@@ -74,8 +74,7 @@ describe('views', () => {
             })
         })
         describe('revisionHistoryModal', () => {
-            it('returns a formatted modal', () => {
-            })
+            it('returns a formatted modal')
         });
         describe('confirmRemovalView', () => {
             it('returns a formatted modal', () => {
