@@ -2,6 +2,9 @@
 
 An app for storing and accessing company specific phrases
 
+![Linter](https://github.com/slackapi/definition-app/workflows/Linter/badge.svg)
+![Unit Tests](https://github.com/slackapi/definition-app/workflows/Unit%20Tests/badge.svg)
+
 ## Installation
 
 ### A note of caution!
