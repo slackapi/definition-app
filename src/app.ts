@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import { createConnection } from 'mysql2/promise';
+import { createConnection, RowDataPacket } from 'mysql2/promise';
 
 import { App, BlockAction, OverflowAction, ButtonAction, AuthorizeResult, ExpressReceiver, ExternalSelectAction, ViewOutput } from '@slack/bolt'
 import { globalActions, blockActions, optionValues } from './config/actions'
@@ -23,12 +23,12 @@ const authorizeFn = async ({ teamId, enterpriseId }: { teamId: string, enterpris
         'SELECT * from tokens WHERE team_id = ? LIMIT 1',
         [teamId, enterpriseId]
     );
-    if (rows.length > 0) {
+    if ((rows as RowDataPacket[]).length > 0) {
         connection.end();
         return {
-            botToken: rows[0].bot_token,
-            botUserId: rows[0].bot_user_id,
-            botId: rows[0].bot_user_id
+            botToken: (rows as RowDataPacket[])[0].bot_token,
+            botUserId: (rows as RowDataPacket[])[0].bot_user_id,
+            botId: (rows as RowDataPacket[])[0].bot_user_id
         }
     }
     throw new Error('No matching authorizations');
