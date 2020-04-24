@@ -10,3 +10,10 @@ Whilst Definition implements the Slack oAuth flow, this is purely to support Ent
 
 ### Heroku
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/slackapi/definition-app)
+
+## Other implmentations
+
+If TypeScript isn't your preferred language, here are other open source projects that implement similar functionality, built by community developers.
+
+### Python
+- [Whatis](https://github.com/wooddar/whatis)
