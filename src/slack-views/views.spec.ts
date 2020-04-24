@@ -170,6 +170,15 @@ describe('views', () => {
                                 text: `Definition of ${testTerm}`,
                                 emoji: true
                             }
+                        },
+                        {
+                            type: "context",
+                            elements: [
+                                {
+                                    type: "mrkdwn",
+                                    text: "You can use Slack markdown for this field, like `*bold*`, `_italics_` and <https://api.slack.com/reference/surfaces/formatting#basics|more>"
+                                }
+                            ]
                         }
                     ]
                 }
@@ -278,6 +287,15 @@ describe('views', () => {
                                 text: 'Definition',
                                 emoji: true
                             }
+                        },
+                        {
+                            type: "context",
+                            elements: [
+                                {
+                                    type: "mrkdwn",
+                                    text: "You can use Slack markdown for this field, like `*bold*`, `_italics_` and <https://api.slack.com/reference/surfaces/formatting#basics|more>"
+                                }
+                            ]
                         }
                     ]
                 };

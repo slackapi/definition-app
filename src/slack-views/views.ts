@@ -54,7 +54,7 @@ export function updateTermView(storedTerm: TermFromDatabase): ViewsPayload {
         `Update ${storedTerm.term}`,
         [
             plainTextInput(`Definition of ${storedTerm.term}`, 'new-definition', `The definition of ${storedTerm.term}`, true, storedTerm.definition),
-            context('You can Slack markdown, like `*bold*`, `_italics_` and <https://api.slack.com/reference/surfaces/formatting#basics|more>')
+            context('You can use Slack markdown for this field, like `*bold*`, `_italics_` and <https://api.slack.com/reference/surfaces/formatting#basics|more>')
         ],
         modalCallbacks.updateTermModal,
         "Update",
@@ -69,7 +69,7 @@ export function addTermModalView(term?: string): ViewsPayload {
         [
             plainTextInput('Term', 'new-term', 'The term you want to define', false, term),
             plainTextInput('Definition', 'new-definition', 'The definition of the term', true),
-            context('You can Slack markdown, like `*bold*`, `_italics_` and <https://api.slack.com/reference/surfaces/formatting#basics|more>')
+            context('You can use Slack markdown for this field, like `*bold*`, `_italics_` and <https://api.slack.com/reference/surfaces/formatting#basics|more>')
         ],
         modalCallbacks.createModal,
         "Submit"
