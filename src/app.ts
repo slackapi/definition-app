@@ -5,6 +5,7 @@ import express from 'express';
 import { createConnection, RowDataPacket } from 'mysql2/promise';
 
 import { App, BlockAction, OverflowAction, ButtonAction, AuthorizeResult, ExpressReceiver, ExternalSelectAction, ViewOutput } from '@slack/bolt'
+import { View } from '@slack/types'
 import { globalActions, blockActions, optionValues } from './config/actions'
 import { displayRevisionsModal, retrieveAllTermsOptions, displayResultModal, displaySearchModal } from './global-actions/read'
 import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
@@ -67,14 +68,23 @@ app.options({ block_id: modalFields.searchTerm }, async ({ payload, ack }) => {
 
 // eslint-disable-next-line @typescript-eslint/camelcase
 app.view({ callback_id: modalCallbacks.searchForTerm }, async ({ ack, view, body, context }) => {
-    ack();
     const state = view.state as ModalStatePayload;
     const castBody = body as unknown as BlockAction;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const term = state.values[modalFields.searchTerm][modalFields.searchTerm].selected_option;
     if (term && body.view) {
-        await displayResultModal(context.botToken, castBody.trigger_id, term.value);
-        // TODO Can we efficiently do this with views.update?
+        displayResultModal(context.botToken, castBody.trigger_id, term.value, body.view.id).then((viewPayload) => {
+            ack(
+                {
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    response_action: 'update',
+                    view: viewPayload as View
+                }
+              );
+      
+        })
+    } else {
+        ack();
     }
 
     return;

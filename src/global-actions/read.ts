@@ -171,7 +171,7 @@ export async function displaySearchModal(botToken: string, triggerID: string): P
     });
 }
 
-export async function displayResultModal(botToken: string, triggerID: string, term: string, viewID?: string): Promise<void> {
+export async function displayResultModal(botToken: string, triggerID: string, term: string, viewID?: string): Promise<unknown> {
   const app = new App({
     token: botToken,
     signingSecret: process.env.SLACK_SIGNING_SECRET
@@ -179,20 +179,7 @@ export async function displayResultModal(botToken: string, triggerID: string, te
   const result = await retrieveDefinition(term);
   const view = result.definition.length > 0 ? singleTermResultView(result.term, result.definition, result.authorID, result.updated as Date) : undefinedTermModal(term)
   if (viewID) {
-    app.client.views.update({
-      token: botToken,
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      trigger_id: triggerID,
-      view,
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      view_id: viewID
-    }).then(
-      () => {
-        Promise.resolve()
-      }).catch(error => {
-        console.error(JSON.stringify(error, null, 2));
-        Promise.reject(error);
-      });
+    return Promise.resolve(view);
   } else {
     app.client.views.open({
       token: botToken,
@@ -207,4 +194,5 @@ export async function displayResultModal(botToken: string, triggerID: string, te
         Promise.reject(error);
       });
   }
+  return Promise.resolve();
 }
