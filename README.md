@@ -1,9 +1,17 @@
 # Definition App
+![Linter](https://github.com/slackapi/definition-app/workflows/Linter/badge.svg)
+![Unit Tests](https://github.com/slackapi/definition-app/workflows/Unit%20Tests/badge.svg)
 
 An app for storing and accessing company specific phrases
 
-![Linter](https://github.com/slackapi/definition-app/workflows/Linter/badge.svg)
-![Unit Tests](https://github.com/slackapi/definition-app/workflows/Unit%20Tests/badge.svg)
+## Screenshots
+![Searching definitions](docs/define-demo.gif)
+_Searching definitions_
+
+---
+
+![Adding definitions](docs/define-add-demo.gif)
+_Adding definitions_
 
 ## Installation
 
@@ -11,8 +19,8 @@ An app for storing and accessing company specific phrases
 
 Whilst Definition implements the Slack oAuth flow, this is purely to support Enterprise Grid Installations. You should *not* install it on multiple public workspaces as the code does *not* make a distinction between workspaces when retrieving terms. Any user can access *any* term/definition pair in the system.
 
-### Heroku
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/slackapi/definition-app)
+### Instructions
+[Click here](docs/SETUP.md) for a step by step guide.
 
 ## Other implmentations
 
