@@ -136,6 +136,13 @@ export function errorModal(): ViewsPayload {
         "");
 }
 
+export function blockedGuestUsageModal(): ViewsPayload {
+    return buildModal(
+        "Access Denied",
+        [section(`We're sorry, but guests cannot currently access this tool.`)],
+        "");
+}
+
 function revisionViewBlock(title: string, definition: string, authorID: string, lastUpdateTS: Date): KnownBlock[] {
     return [
         section(title),

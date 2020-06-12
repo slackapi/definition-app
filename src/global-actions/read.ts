@@ -1,4 +1,4 @@
-import { emptyQueryView, revisionHistoryModal, singleTermResultView, undefinedTermModal } from '../slack-views/views'
+import { emptyQueryView, revisionHistoryModal, singleTermResultView, undefinedTermModal, blockedGuestUsageModal } from '../slack-views/views'
 import { createConnection, RowDataPacket } from "mysql2/promise";
 import databaseConfig from '../config/database';
 import { App } from '@slack/bolt';
@@ -195,4 +195,26 @@ export async function displayResultModal(botToken: string, triggerID: string, te
       });
   }
   return Promise.resolve();
+}
+
+export async function displayBlockedGuestModal(botToken: string, triggerID: string): Promise<void> {
+  const app = new App({
+    token: botToken,
+    signingSecret: process.env.SLACK_SIGNING_SECRET
+  });
+
+  const view = blockedGuestUsageModal();
+  app.client.views.open({
+    token: botToken,
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    trigger_id: triggerID,
+    view
+  }).then(
+    () => {
+      return Promise.resolve()
+    }).catch(error => {
+      console.error(JSON.stringify(error, null, 2));
+      return Promise.reject(error);
+    });
+  
 }
