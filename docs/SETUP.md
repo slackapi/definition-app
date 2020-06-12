@@ -60,10 +60,12 @@ The following steps will use a combination of your server's command line and a w
     DB_USERNAME=
     DB_NAME=
     DB_PASSWORD=
+    BLOCK_GUEST_USAGE=
     ```
     - `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, and `SLACK_SIGNING_SECRET` can be found on your new application's **Basic Information** page
     - `APPROVED_WORKSPACES`, and `APPROVED_ENTERPRISES` are the **Workspace** or **Enterprise** ID of the Workspace or Enterprise Grid you want to install the application to. This prevents other workspaces installing the app.
     - `DB_HOSTNAME`, `DB_USERNAME` etc are the **MySQL credentials** for the database that will store your definitions.
+    - `BLOCK_GUEST_USAGE` - By default the tool will allow Multi-Channel Guests to access your definitions. If you set this to `true`, guests will be prevented from querying the tool.
 
 
 2. Run `npm install` to install code-level dependencies such as Bolt for Javascript etc.
