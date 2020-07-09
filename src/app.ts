@@ -80,13 +80,13 @@ app.options({ block_id: modalFields.searchTerm }, async ({ payload, ack }) => {
 
 // eslint-disable-next-line @typescript-eslint/camelcase
 app.view({ callback_id: modalCallbacks.searchForTerm }, async ({ ack, view, body, context }) => {
-    console.log('modal.searchForTerm');
     const state = view.state as ModalStatePayload;
     const castBody = body as unknown as BlockAction;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const term = state.values[modalFields.searchTerm][modalFields.searchTerm].selected_option;
     if (term && body.view) {
         displayResultModal(context.botToken, castBody.trigger_id, term.value, body.view.id).then((viewPayload) => {
+            console.log('search.resultFound');
             ack(
                 {
                     // eslint-disable-next-line @typescript-eslint/camelcase
