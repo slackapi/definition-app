@@ -7,7 +7,7 @@ import { createConnection, RowDataPacket } from 'mysql2/promise';
 import { App, BlockAction, OverflowAction, ButtonAction, AuthorizeResult, ExpressReceiver, ExternalSelectAction, ViewOutput } from '@slack/bolt'
 import { View } from '@slack/types'
 import { globalActions, blockActions, optionValues } from './config/actions'
-import { displayRevisionsModal, retrieveAllTermsOptions, displayResultModal, displaySearchModal } from './global-actions/read'
+import { displayRevisionsModal, retrieveAllTermsOptions, displayResultModal, displaySearchModal, displayBlockedGuestModal } from './global-actions/read'
 import { displayAddTermModal, storeDefinitionFromModal, ModalStatePayload } from './global-actions/write'
 import { modalCallbacks, modalFields } from './config/views';
 import { displayRemovalConfirmationModal, removeTerm, displaySuccessfulRemovalModal } from './global-actions/remove';
@@ -54,6 +54,17 @@ receiver.app.get('/app_installed', appInstalledRouter);
 app.shortcut({ callback_id: 'shortcuts_phrase_search' }, async ({ ack, context, body }) => {
     ack();
     console.log('run.globalshortcut');
+    const user = await app.client.users.info({
+        token: context.botToken,
+        user: body.user.id
+    });
+    const blockGuestUsage: boolean = process.env.BLOCK_GUEST_USAGE == 'true' ? true : false; 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    if ((user.user.is_restricted || user.user.is_ultra_restricted) && blockGuestUsage) {
+        await displayBlockedGuestModal(context.botToken, body.trigger_id);
+        return;
+    }
     await displaySearchModal(context.botToken, body.trigger_id);
 });
 
@@ -106,6 +117,18 @@ app.action({ type: 'block_actions', action_id: blockActions.searchTypeahead }, a
 app.command(`/${globalActions.define}`, async ({ command, ack, context }) => {
     ack();
     console.log('run.slashcommand');
+    const user = await app.client.users.info({
+        token: context.botToken,
+        user: command.user_id
+    });
+    const blockGuestUsage: boolean = process.env.BLOCK_GUEST_USAGE == 'true' ? true : false; 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    if ((user.user.is_restricted || user.user.is_ultra_restricted) && blockGuestUsage) {
+        await displayBlockedGuestModal(context.botToken, command.trigger_id);
+        return;
+    }    
+    
     if (command.text.length > 0) {
         await displayResultModal(context.botToken, command.trigger_id, command.text);
     } else {
