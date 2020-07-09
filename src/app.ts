@@ -53,6 +53,7 @@ receiver.app.get('/app_installed', appInstalledRouter);
 // eslint-disable-next-line @typescript-eslint/camelcase
 app.shortcut({ callback_id: 'shortcuts_phrase_search' }, async ({ ack, context, body }) => {
     ack();
+    console.log('run.globalshortcut');
     await displaySearchModal(context.botToken, body.trigger_id);
 });
 
@@ -68,6 +69,7 @@ app.options({ block_id: modalFields.searchTerm }, async ({ payload, ack }) => {
 
 // eslint-disable-next-line @typescript-eslint/camelcase
 app.view({ callback_id: modalCallbacks.searchForTerm }, async ({ ack, view, body, context }) => {
+    console.log('modal.searchForTerm');
     const state = view.state as ModalStatePayload;
     const castBody = body as unknown as BlockAction;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -103,6 +105,7 @@ app.action({ type: 'block_actions', action_id: blockActions.searchTypeahead }, a
 
 app.command(`/${globalActions.define}`, async ({ command, ack, context }) => {
     ack();
+    console.log('run.slashcommand');
     if (command.text.length > 0) {
         await displayResultModal(context.botToken, command.trigger_id, command.text);
     } else {
@@ -172,6 +175,7 @@ app.action({ type: 'block_actions', action_id: blockActions.termOverflowMenu }, 
 app.view(modalCallbacks.createModal, ({ ack, body, context }) => {
     const castBody = body as unknown as BlockAction;
     ack();
+    console.log('modal.termCreated');
     storeDefinitionFromModal(body.view.state as ModalStatePayload, body.user.id, castBody.trigger_id, context.botToken);
 });
 
@@ -180,6 +184,7 @@ app.view(modalCallbacks.confirmRemovalModal, ({ ack, body, context }) => {
     const castBody = body as unknown as BlockAction;
     const metadata = JSON.parse(body.view.private_metadata);
     removeTerm(metadata.term).then(() => {
+        console.log('modal.SuccesfulRemoval');
         // eslint-disable-next-line @typescript-eslint/camelcase
         displaySuccessfulRemovalModal(metadata['term'], context.botToken, castBody.trigger_id);
     });
