@@ -9,7 +9,8 @@
     "start": "node build/app.js",
     "build": "tsc",
     "postinstall": "npm run build",
-    "initdatabase": "node build/database/run-db-scripts.js"
+    "initdatabase": "node build/database/run-db-scripts.js",
+    "launch": "tsc; node build/app.js"
   },
   "repository": {
     "type": "git",
