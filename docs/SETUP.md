@@ -44,6 +44,11 @@ In your preferred web browser:
 
 ## Part 2: Configure and start your app
 
+### Docker
+```
+docker pull ghcr.io/slackapi/definition-app:latest
+```
+
 ### Heroku
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/slackapi/definition-app)
 
