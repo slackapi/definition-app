@@ -36,6 +36,7 @@ In your preferred web browser:
       - Click Save URLs
     - Under Scopes and **Bot Token Scopes**, 
         - Add `commands` so we can add a shortcut and a slash command
+        - Add `users:read` so that we can lookup the user that executes commands
 
 5. If you plan to install your application to more than one workspace, go to **Manage Distribution** and activate public distribution
 
