@@ -29,13 +29,19 @@ In your preferred web browser:
       - For the Callback ID, it is important you set it to `shortcuts_phrase_search`
     - Enter your Select Menus Options Load URL `https://your-host/slack/events`
 
+3. Go to **Slash Commands**
+    - Create New Command
+    - Command: /define
+    - Request URL: `https://your-host/slack/events`
+    - Short Description: Search for phrases
 
-3. Go to **OAuth & Permissions** to add a bot scope
+4. Go to **OAuth & Permissions** to add a bot scope
     - Under **Redirect URLs**
       - Add `https://your-host/app_installed`
       - Click Save URLs
     - Under Scopes and **Bot Token Scopes**, 
         - Add `commands` so we can add a shortcut and a slash command
+        - Add `users:read` so that we can lookup the user that executes commands
 
 5. If you plan to install your application to more than one workspace, go to **Manage Distribution** and activate public distribution
 
